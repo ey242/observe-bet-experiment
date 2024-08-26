@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observe-Bet-for-children</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      button {
+        margin: 10px 0;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .button-container button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+        border-radius: 5px;
+      }
+
+      .button-container button:hover {
+        background-color: #e8e8e8;
+      }
+
+      video {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .slider-container {
+        margin-top: 20px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      form input {
+        margin-bottom: 10px;
+        padding: 5px;
+      }
+
+      .game-container {
+        display: grid;
+        gap: 10px;
+        justify-content: center;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .group.large {
+        width: 200px;
+        height: 200px;
+        margin: 20px;
+      }
+
+      .doors {
+        display: flex;
+      }
+
+      .icon {
+        width: 50px;
+        height: 50px;
+        margin: 2px;
+        cursor: pointer;
+      }
+
+      .group.large .icon {
+        width: 100px;
+        height: 100px;
+      }
+
+      .chosen-image {
+        width: 100px;
+        height: 100px;
+      }
+
+      .group.large .chosen-image {
+        width: 200px;
+        height: 200px;
+      }
+
+      #instruction1,
+      #instruction2,
+      #instruction3,
+      #instruction4 {
+        text-align: center;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      video {
+        display: block;
+        margin: 0 auto;
+      }
+
+      .instruction-page {
+        text-align: center;
+        margin: 20px auto;
+        max-width: 600px;
+      }
+
+      .continue-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="experiment-container">
+      <div id="participant-info">
+        <h2>Participant Information</h2>
+        <!-- Corrected form structure -->
+        <form id="info-form">
+          <label for="test_date">Test Date</label>
+          <input type="text" id="test_date" name="test_date" placeholder="mm/dd/yyyy" required>
+          <label for="experimenter">Experimenter name</label>
+          <input type="text" id="experimenter" name="experimenter" required>
+          <label for="SID">Participant ID</label>
+          <input type="text" id="SID" name="SID" required>
+          <label for="age">Participant Age (years)</label>
+          <input type="text" id="age" name="age" required>
+          <label for="sex">Participant Sex</label>
+          <input type="text" id="sex" name="sex" placeholder="M/F" required>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+      <div id="consent-screen" class="hidden">
+
+        <p>
+          <strong>Cognitive Development and Learning Lab</strong>
+          <br> Department of Psychology <br> UC Berkeley
+        </p>
+        <p> Dear Participants, </p>
+        <p> My name is Alison Gopnik. I am a Professor in the Department of Psychology at the University of California, Berkeley. I am doing a research study, and I want to ask if you will be a part of it. </p>
+        <p>
+          <strong> What is a research study? </strong>
+        </p>
+        <p> A research study is when people like me collect a lot of information about a certain thing to find out more about it. This letter tells you about my study so you can decide if you want to be in it. Before you decide, you can talk about it with your parents or anyone else you like. If you have any questions about the research, just ask us. </p>
+        <p>
+          <strong> Why are we doing this study? </strong>
+        </p>
+        <p> I and the other researchers on my team are doing this study to find out more about how people learn. This study is not part of your schoolwork, and you won't get graded on it. </p>
+        <p>
+          <strong> Why are we talking to you about this study? </strong>
+        </p>
+        <p> We're asking a lot of children your age if they would like to help. We're inviting you to take part because you are the right age for this study. </p>
+        <p>
+          <strong> What will happen if you are in the study? </strong>
+        </p>
+        <p> If you agree to be in the study and your parents say it's okay, you might be asked to play our computer game and we will ask you questions about it. We play a lot of different games with children to find out more about how they learn. This game in particular will take about 15 minutes. </p>
+        <p>
+          <strong> If you don't want to be in the study, what can you do instead? </strong>
+        </p>
+        <p> If you don't want to do the study anymore, please let us know and you can keep doing whatever activity you were doing before. </p>
+        <p>
+          <strong> Will good things happen from being in this study? </strong>
+        </p>
+        <p> Being in this study won't really change anything for you. But we hope that what we find out from this research will help us figure out how people learn. </p>
+        <p>
+          <strong> Are there things you might not like about being in the study? </strong>
+        </p>
+        <p> You might get bored or tired and decide that you don't want to finish the study activities. If this happens, just tell us you want to stop. </p>
+        <p>
+          <strong> Will you get paid for being in the study? </strong>
+        </p>
+        <p> No, you will not be paid for being in this study. </p>
+        <p>
+          <strong> Do you have to be in the study? </strong>
+        </p>
+        <p> No, you don't! Research is something you do only if you want to. Nothing bad will happen if you don't want to be in the study. Just tell us. Whether you decide to participate or not, either way will have no effect on your grades at school, or anything else. And remember, you can always change your mind later if you don't want to be in the study any more. </p>
+        <p>
+          <strong> Do you have any questions? </strong>
+        </p>
+        <p> You can ask questions about this study at any time, now or later. You can talk to me, or your parents, or someone else if you like. You can contact me, Alison Gopnik, at gopnik@berkeley.edu. Or you can contact our lab manager at gopniklabmanager@berkeley.edu. Or you can contact U.C. Berkeley's Committee for the Protection of Human Subjects at 510-642-7461 or subjects@berkeley.edu. </p>
+        <p>
+          <strong>Consent Statement</strong>
+        </p>
+        <p> If you agree to participate, please click the consent button below. Thank you very much for your time and consideration. </p>
+        <p> By selecting the <strong>Consent</strong> button below, I acknowledge that I am 7 or older, have read this consent form, and I agree to take part in the game conducted by the research lab of Alison Gopnik. </p>
+        <p> If you do NOT agree to participate in this study, please click the <strong>Decline</strong> button below. </p>
+        <button id="consent-button">Consent</button>
+        <button id="decline-button">Decline</button>
+      </div>
+      <div id="instruction1" class="instruction-div hidden">
+        <div class="video-container">
+          <video width="600" height="300" controls>
+            <source src="/Users/norac/Desktop/gambling/stim/video/Scene 1- Practice.mp4" type="video/mp4"> Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="button-container">
+          <button class="number-button" data-value="0">0</button>
+          <button class="number-button" data-value="1">1</button>
+          <button class="number-button" data-value="2">2</button>
+          <button class="number-button" data-value="3">3</button>
+        </div>
+        <div class="question-text">
+          <p>What happens if you meet the kind elf?</p>
+          <p>What happens if you meet the mean monster?</p>
+        </div>
+      </div>
+      <div id="instruction2" class="instruction-div hidden">
+        <div class="video-container">
+          <video width="600" height="300" controls>
+            <source src="/Users/norac/Desktop/gambling/stim/video/Practice- 0.5.mp4" type="video/mp4"> Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="button-container">
+          <button class="number-button" data-value="0">0</button>
+          <button class="number-button" data-value="1">1</button>
+          <button class="number-button" data-value="2">2</button>
+          <button class="number-button" data-value="3">3</button>
+        </div>
+        <div class="question-text">
+          <p>What happens if you meet the kind elf?</p>
+          <p>What happens if you meet the mean monster?</p>
+        </div>
+      </div>
+      <div id="instruction3" class="instruction-div hidden">
+        <div class="video-container">
+          <video width="600" height="300" controls>
+            <source src="/Users/norac/Desktop/gambling/stim/video/Practice- Part 2.mp4" type="video/mp4"> Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="button-container">
+          <button class="number-button" data-value="0">0</button>
+          <button class="number-button" data-value="1">1</button>
+          <button class="number-button" data-value="2">2</button>
+          <button class="number-button" data-value="3">3</button>
+        </div>
+        <div class="question-text">
+          <p>What happens if you meet the kind elf?</p>
+          <p>What happens if you meet the mean monster?</p>
+        </div>
+      </div>
+      <div id="instruction4" class="instruction-div hidden">
+        <div class="video-container">
+          <video width="600" height="300" controls>
+            <source src="/Users/norac/Desktop/gambling/stim/video/Practice- Part 3.mp4" type="video/mp4"> Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="button-container">
+          <button class="number-button" data-value="0">0</button>
+          <button class="number-button" data-value="1">1</button>
+          <button class="number-button" data-value="2">2</button>
+          <button class="number-button" data-value="3">3</button>
+        </div>
+        <div class="question-text">
+          <p>What happens if you meet the kind elf?</p>
+          <p>What happens if you meet the mean monster?</p>
+        </div>
+      </div>
+      <div id="elfslider1" class="hidden">
+        <img src="/Users/norac/Desktop/gambling/stim/video/elfdoors.png" alt="Elf Doors" style="width: 750px;">
+        <p>
+          <center>Can you guess which door the kind elf prefers to hide behind?</center>
+        </p>
+        <div class="slider-container">
+          <input type="range" min="0" max="100" value="50" class="slider" id="elfSlider">
+        </div>
+        <button class="next-button" data-next="wolfslider1">Next</button>
+      </div>
+      <div id="wolfslider1" class="hidden">
+        <img src="/Users/norac/Desktop/gambling/stim/video/wolfdoors.png" alt="Wolf Doors" style="width: 750px;">
+        <p>
+          <center>Can you guess which door the mean monster prefers to hide behind?</center>
+        </p>
+        <div class="slider-container">
+          <input type="range" min="0" max="100" value="50" class="slider" id="wolfSlider">
+        </div>
+        <button class="next-button" data-next="pretrial">Next</button>
+      </div>
+      <div id="pretrial" class="hidden">
+        <p>Now we are going to enter the practice game. This is to practice for your real game later where you will get to win stickers for the number of coins you win. So you want to learn as much as you can in the practice game to do well in the real game!</p>
+        <p>This practice game has 4 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.</p>
+        <p>You will find out how many coins you win at the end of the game.</p>
+        <p>Are you ready to play the game?</p>
+        <button id="ready-button">Ready</button>
+      </div>
+    </div>
+    <div id="game-screen" class="hidden">
+      <h2>Icon Selection Game</h2>
+      <div id="gameContainer" class="game-container"></div>
+    </div>
+    <div id="instruction-page-1" class="instruction-page hidden">
+      <h2>Instructions - Page 1</h2>
+      <p>This is the first set of instructions for the game.</p>
+      <button class="continue-button" data-next="instruction-page-2">Continue</button>
+    </div>
+    <div id="instruction-page-2" class="instruction-page hidden">
+      <div class="video-container">
+        <video width="600" height="300" controls>
+          <source src="/Users/norac/Desktop/gambling/stim/video/Scene 1- Testing.mp4" type="video/mp4"> Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="button-container">
+        <button class="bumber-button" data-value="0" data-next="instruction-page-3">0</button>
+        <button class="bumber-button" data-value="1" data-next="instruction-page-3">1</button>
+        <button class="bumber-button" data-value="2" data-next="instruction-page-3">2</button>
+        <button class="bumber-button" data-value="3" data-next="instruction-page-3">3</button>
+      </div>
+      <div class="question-text">
+        <p>Can the mean thief hide behind either of the doors?</p>
+        <p>Can the kind princess hide behind either of the doors? </p>
+        <p>Will the kind princess change the door she hides behind?</p>
+        <p>Will the mean thief change the door he hides behind?</p>
+      </div>
+    </div>
+    <div id="instruction-page-3" class="instruction-page hidden">
+      <p> This is a new game with 12 rounds. <br> You will get stickers for the number of coins you get. </p>
+      <button class="continue-button" data-next="game-screen-2">Ready</button>
+    </div>
+    <div id="game-screen-2" class="hidden">
+      <h2>Icon Selection Game - Round 2</h2>
+      <div id="gameContainer2" class="game-container"></div>
+    </div>
+    <div id="instruction-page-4" class="instruction-page hidden">
+      <h2>Episode Info</h2>
+      <button class="continue-button" data-next="instruction-page-5">Continue</button>
+    </div>
+    <div id="instruction-page-5" class="instruction-page hidden">
+      <img src="/Users/norac/Desktop/gambling/stim/video/princessdoors.png" alt="Wolf Doors" style="width: 750px;">
+      <p>
+        <center>Which door do you think the kind princess prefers to hide behind?</center>
+      </p>
+      <div class="slider-container" style="width: 127%;">
+        <input type="range" min="0" max="100" value="50" class="slider" id="monsterSlider">
+      </div>
+      <button class="continue-button" data-next="instruction-page-6">Continue</button>
+    </div>
+    <div id="instruction-page-6" class="instruction-page hidden">
+      <img src="/Users/norac/Desktop/gambling/stim/video/thiefdoors.png" alt="Wolf Doors" style="width: 750px;">
+      <p>
+      <div style="text-align: center;"> Which door do you think the mean thief prefers to hide behind? </div>
+      </p>
+      <div class="slider-container" style="width: 127%;">
+        <input type="range" min="0" max="100" value="50" class="slider" id="monsterSlider">
+      </div>
+      <button class="continue-button" data-next="end-screen">Continue</button>
+    </div>
+    <div id="end-screen" class="hidden">
+      <h2>Episode 2/2</h2>
+    </div>
+    </div>
+    <script>
+
+      const n_arms = 2;
+      const n_steps = 4;
+      const n_episodes = 2;
+      let i_step = 1;
+      let i_episode = 0;
+      let rewards_tally = 0;
+      let rewards_total_1 = 0;
+      let rewards_total_2 = 0;
+      let total_rewards_tally = 0;
+      let ps = [0.5, 0.5];
+      let transitions_ep = [];
+
+      let groupsInteracted = 0;
+      let currentGameScreen = 'game-screen';
+      const totalGroups = {
+        'game-screen': 4,
+        'game-screen-2': 20
+      };
+
+      function setup() {
+        rewards_tally = 0;
+        transitions_ep = [];
+        i_step = 1;
+      }
+
+      function showScreen(id) {
+        document.querySelectorAll('#experiment-container > div, #game-screen, #instruction-page-1, #instruction-page-2, #instruction-page-3, #game-screen-2, #instruction-page-4, #instruction-page-5, #instruction-page-6, #end-screen').forEach(screen => {
+          screen.classList.add('hidden');
+        });
+        document.getElementById(id).classList.remove('hidden');
+      }
+
+      function setGridLayout(container, n) {
+        const columns = n === 4 ? 2 : 5;
+        container.style.gridTemplateColumns = `repeat(${columns}, auto)`;
+      }
+
+      function createIcon(type) {
+        const icon = document.createElement('img');
+        icon.className = 'icon';
+        icon.src = `/Users/norac/Desktop/gambling/pics/${type}.png`;
+        icon.alt = type;
+        icon.dataset.type = type;
+        icon.style.pointerEvents = 'auto';  
+        return icon;
+      }
+
+      function createGroup(index, isLarge = false) {
+        const group = document.createElement('div');
+        group.className = 'group';
+        if (isLarge) group.classList.add('large');
+        group.dataset.index = index;
+        group.dataset.interacted = 'false';
+
+        const glasses = createIcon('glasses');
+        const doors = document.createElement('div');
+        doors.className = 'doors';
+        const blueDoor = createIcon('bluedoor');
+        const brownDoor = createIcon('browndoor');
+
+        doors.appendChild(blueDoor);
+        doors.appendChild(brownDoor);
+        group.appendChild(glasses);
+        group.appendChild(doors);
+
+        return group;
+      }
+
+      function replaceWithChosenImage(group, type) {
+        const chosenImage = document.createElement('img');
+        chosenImage.className = 'chosen-image';
+        chosenImage.src = `/Users/norac/Desktop/gambling/pics/chosen${type}.png`;
+        chosenImage.alt = `Chosen ${type}`;
+        group.innerHTML = '';
+        group.appendChild(chosenImage);
+      }
+
+      function handleIconClick(event) {
+        const icon = event.target.closest('.icon');  
+        if (!icon) return;  
+
+        const group = icon.closest('.group');
+        if (!group || group.dataset.interacted === 'true') return;
+
+        event.stopPropagation();  
+
+        let chosenType;
+        switch (icon.dataset.type) {
+          case 'glasses':
+            chosenType = 'elf';
+            break;
+          case 'browndoor':
+            chosenType = 'brown';
+            break;
+          case 'bluedoor':
+            chosenType = 'blue';
+            break;
+          default:
+            return;  
+        }
+
+        replaceWithChosenImage(group, chosenType);
+
+        group.dataset.interacted = 'true';
+        groupsInteracted++;
+
+        if (groupsInteracted === totalGroups[currentGameScreen]) {
+          setTimeout(() => {
+            if (currentGameScreen === 'game-screen') {
+              showScreen('instruction-page-1');
+            } else if (currentGameScreen === 'game-screen-2') {
+              showScreen('instruction-page-4');
+            }
+            groupsInteracted = 0;
+            document.querySelectorAll('.group').forEach(g => g.dataset.interacted = 'false');
+          }, 3000);
+        }
+      }
+
+      function initializeGame(containerId, gridSize) {
+        const gameContainer = document.getElementById(containerId);
+        gameContainer.innerHTML = '';
+        setGridLayout(gameContainer, gridSize);
+        groupsInteracted = 0;
+
+        for (let i = 0; i < gridSize; i++) {
+          const isLarge = gridSize === 4;
+          const group = createGroup(i, isLarge);
+          gameContainer.appendChild(group);
+        }
+
+        gameContainer.addEventListener('click', handleIconClick);
+      }
+
+      document.getElementById('info-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const participantInfo = Object.fromEntries(formData);
+        console.log('Participant Info:', participantInfo);
+        showScreen('consent-screen');
+      });
+      document.getElementById('consent-button').addEventListener('click', () => {
+        showScreen('instruction1');
+      });
+      document.getElementById('decline-button').addEventListener('click', () => {
+        alert("You've declined to consent to our experiment. Thank you for your time.");
+      });
+      document.querySelectorAll('.next-button, .continue-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const nextScreen = e.target.dataset.next;
+          if (nextScreen) {
+            if (e.target.closest('div').id === 'elfslider1') {
+              console.log(`Elf slider value: ${document.getElementById('elfSlider').value}`);
+            } else if (e.target.closest('div').id === 'wolfslider1') {
+              console.log(`Wolf slider value: ${document.getElementById('wolfSlider').value}`);
+            } else if (e.target.closest('div').id === 'instruction-page-5') {
+              console.log(`Monster slider value: ${document.getElementById('monsterSlider').value}`);
+            }
+            showScreen(nextScreen);
+            if (nextScreen === 'game-screen-2') {
+              currentGameScreen = 'game-screen-2';
+              initializeGame('gameContainer2', totalGroups[currentGameScreen]);
+            }
+          }
+        });
+      });
+      document.querySelectorAll('.number-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const currentScreen = e.target.closest('div[id^="instruction"]').id;
+          const nextScreen = {
+            'instruction1': 'instruction2',
+            'instruction2': 'instruction3',
+            'instruction3': 'instruction4',
+            'instruction4': 'elfslider1'
+          } [currentScreen];
+          if (nextScreen) {
+            console.log(`Selected answer: ${e.target.dataset.value}`);
+            showScreen(nextScreen);
+          }
+        });
+      });
+ document.getElementById('ready-button').addEventListener('click', () => {
+  showScreen('game-screen');
+  currentGameScreen = 'game-screen';
+  initializeGame('gameContainer', totalGroups[currentGameScreen]);
+});
+
+      document.querySelectorAll('.bumber-button').forEach(button => {
+        button.addEventListener('click', function() {
+
+          const value = this.getAttribute('data-value');
+          console.log('Selected value:', value);
+
+          const nextPage = this.getAttribute('data-next');
+          if (nextPage) {
+            document.getElementById(nextPage).classList.remove('hidden');
+            this.closest('.instruction-page').classList.add('hidden');
+          }
+        });
+      });
+      document.querySelectorAll('.continue-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const nextScreen = e.target.dataset.next;
+          if (nextScreen) {
+            showScreen(nextScreen);
+            if (nextScreen === 'game-screen-2') {
+              currentGameScreen = 'game-screen-2';
+              initializeGame('gameContainer2', totalGroups[currentGameScreen]);
+            }
+          }
+        });
+      });
+      document.getElementById('monsterSlider').addEventListener('change', function() {
+        console.log('Monster slider value:', this.value);
+      });
+
+      showScreen('participant-info');
+    </script>
+  </body>
+</html>
