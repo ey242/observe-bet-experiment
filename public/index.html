@@ -72,22 +72,27 @@
 
       .game-container {
         display: grid;
-        gap: 10px;
+        gap: 20px; 
         justify-content: center;
-        max-width: 1000px;
+        max-width: 1200px; 
         margin: 0 auto;
+        padding: 20px; 
       }
 
       .group {
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 15px; 
+        border: 1px solid #e0e0e0; 
+        border-radius: 8px; 
+        background-color: #f9f9f9; 
       }
 
       .group.large {
-        width: 200px;
-        height: 200px;
-        margin: 20px;
+        width: 220px; 
+        height: 220px; 
+        margin: 10px; 
       }
 
       .doors {
@@ -146,6 +151,87 @@
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
+      }
+
+      .episode-summary {
+        text-align: center;
+        margin: 20px auto;
+        max-width: 800px;
+      }
+
+      .summary-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .summary-coins {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(4, auto);
+        gap: 10px;
+        justify-content: center;
+        align-items: start;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      .summary-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+      }
+
+      .summary-img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+        margin-bottom: 5px;
+      }
+
+      .summary-label,
+      .summary-number {
+        font-size: 12px;
+        margin: 2px 0;
+      }
+
+      @media (max-width: 768px) {
+        .summary-grid {
+          grid-template-columns: repeat(5, 1fr);
+        }
+
+        .summary-img {
+          width: 40px;
+          height: 40px;
+        }
+
+        .summary-label,
+        .summary-number {
+          font-size: 10px;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .game-container[data-groups="4"],
+        .game-container[data-groups="5"] {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .game-container[data-groups="20"] {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .game-container[data-groups="20"] {
+          grid-template-columns: repeat(5, 1fr);
+        }
       }
     </style>
   </head>
@@ -225,10 +311,22 @@
         <button id="consent-button">Consent</button>
         <button id="decline-button">Decline</button>
       </div>
+
+      <!-- Add this new div for the probability selection screen -->
+      <div id="probability-selection" class="hidden">
+        <h2>Select Probability Condition</h2>
+        <p>Please choose the probability condition for this experiment:</p>
+        <div class="button-container">
+          <button class="prob-button" data-probability="0.5">0.5</button>
+          <button class="prob-button" data-probability="0.8">0.8</button>
+          <button class="prob-button" data-probability="1.0">1.0</button>
+        </div>
+      </div>
+
       <div id="instruction1" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/gambling/stim/video/Scene 1- Practice.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="/Users/norac/Desktop/observebet/video/Scene 1- Practice.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -245,7 +343,7 @@
       <div id="instruction2" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/gambling/stim/video/Practice- 0.5.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="/Users/norac/Desktop/observebet/video/Practice- 0.5.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -262,7 +360,7 @@
       <div id="instruction3" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/gambling/stim/video/Practice- Part 2.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="/Users/norac/Desktop/observebet/video/Practice- Part 2.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -279,7 +377,7 @@
       <div id="instruction4" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/gambling/stim/video/Practice- Part 3.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="/Users/norac/Desktop/observebet/video/Practice- Part 3.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -293,47 +391,52 @@
           <p>What happens if you meet the mean monster?</p>
         </div>
       </div>
+
       <div id="elfslider1" class="hidden">
-        <img src="/Users/norac/Desktop/gambling/stim/video/elfdoors.png" alt="Elf Doors" style="width: 750px;">
+        <img src="/Users/norac/Desktop/observebet/video/elfdoors.png" alt="Elf Doors" style="width: 750px;">
         <p>
           <center>Can you guess which door the kind elf prefers to hide behind?</center>
         </p>
-        <div class="slider-container">
+        <div class="slider-container" style="width: 94%;">          
           <input type="range" min="0" max="100" value="50" class="slider" id="elfSlider">
         </div>
         <button class="next-button" data-next="wolfslider1">Next</button>
       </div>
+
       <div id="wolfslider1" class="hidden">
-        <img src="/Users/norac/Desktop/gambling/stim/video/wolfdoors.png" alt="Wolf Doors" style="width: 750px;">
+        <img src="/Users/norac/Desktop/observebet/video/wolfdoors.png" alt="Wolf Doors" style="width: 750px;">
         <p>
           <center>Can you guess which door the mean monster prefers to hide behind?</center>
         </p>
-        <div class="slider-container">
-          <input type="range" min="0" max="100" value="50" class="slider" id="wolfSlider">
+        <div class="slider-container" style="width: 94%;">
+                    <input type="range" min="0" max="100" value="50" class="slider" id="wolfSlider">
         </div>
         <button class="next-button" data-next="pretrial">Next</button>
       </div>
+
       <div id="pretrial" class="hidden">
-        <p>Now we are going to enter the practice game. This is to practice for your real game later where you will get to win stickers for the number of coins you win. So you want to learn as much as you can in the practice game to do well in the real game!</p>
-        <p>This practice game has 4 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.</p>
+        <p id="practice-rounds-text">Now we are going to enter the practice game. This is to practice for your real game later where you will get to win stickers for the number of coins you win. So you want to learn as much as you can in the practice game to do well in the real game!</p>
+        <p id="rounds-instruction">This practice game has 4 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.</p>
         <p>You will find out how many coins you win at the end of the game.</p>
         <p>Are you ready to play the game?</p>
         <button id="ready-button">Ready</button>
       </div>
     </div>
     <div id="game-screen" class="hidden">
-      <h2>Icon Selection Game</h2>
+      <!-- <h2>Icon Selection Game</h2> -->
       <div id="gameContainer" class="game-container"></div>
     </div>
+
     <div id="instruction-page-1" class="instruction-page hidden">
-      <h2>Instructions - Page 1</h2>
-      <p>This is the first set of instructions for the game.</p>
+      <!-- <h2 class="summary-title">Episode 1/2</h2> -->
+      <div id="episode-1-summary"></div>
       <button class="continue-button" data-next="instruction-page-2">Continue</button>
     </div>
+
     <div id="instruction-page-2" class="instruction-page hidden">
       <div class="video-container">
         <video width="600" height="300" controls>
-          <source src="/Users/norac/Desktop/gambling/stim/video/Scene 1- Testing.mp4" type="video/mp4"> Your browser does not support the video tag.
+          <source src="/Users/norac/Desktop/observebet/video/Scene 1- Testing.mp4" type="video/mp4"> Your browser does not support the video tag.
         </video>
       </div>
       <div class="button-container">
@@ -350,19 +453,15 @@
       </div>
     </div>
     <div id="instruction-page-3" class="instruction-page hidden">
-      <p> This is a new game with 12 rounds. <br> You will get stickers for the number of coins you get. </p>
+      <p> This is a new game with 20 rounds. <br> You will get stickers for the number of coins you get. </p>
       <button class="continue-button" data-next="game-screen-2">Ready</button>
     </div>
     <div id="game-screen-2" class="hidden">
-      <h2>Icon Selection Game - Round 2</h2>
+      <!-- <h2>Icon Selection Game - Round 2</h2> -->
       <div id="gameContainer2" class="game-container"></div>
     </div>
-    <div id="instruction-page-4" class="instruction-page hidden">
-      <h2>Episode Info</h2>
-      <button class="continue-button" data-next="instruction-page-5">Continue</button>
-    </div>
     <div id="instruction-page-5" class="instruction-page hidden">
-      <img src="/Users/norac/Desktop/gambling/stim/video/princessdoors.png" alt="Wolf Doors" style="width: 750px;">
+      <img src="/Users/norac/Desktop/observebet/video/princessdoors.png" alt="Wolf Doors" style="width: 750px;">
       <p>
         <center>Which door do you think the kind princess prefers to hide behind?</center>
       </p>
@@ -372,7 +471,7 @@
       <button class="continue-button" data-next="instruction-page-6">Continue</button>
     </div>
     <div id="instruction-page-6" class="instruction-page hidden">
-      <img src="/Users/norac/Desktop/gambling/stim/video/thiefdoors.png" alt="Wolf Doors" style="width: 750px;">
+      <img src="/Users/norac/Desktop/observebet/video/thiefdoors.png" alt="Wolf Doors" style="width: 750px;">
       <p>
       <div style="text-align: center;"> Which door do you think the mean thief prefers to hide behind? </div>
       </p>
@@ -381,11 +480,99 @@
       </div>
       <button class="continue-button" data-next="end-screen">Continue</button>
     </div>
-    <div id="end-screen" class="hidden">
-      <h2>Episode 2/2</h2>
+<div id="end-screen" class="hidden">
+  <h2 class="summary-title"></h2>
+  <div id="episode-2-summary"></div>
+  <button class="continue-button" data-next="final-screen">Continue</button>
+</div>
     </div>
-    </div>
+
     <script>
+
+      function addQuitButton() {
+        const quitButton = document.createElement('button');
+        quitButton.textContent = 'Quit';
+        quitButton.id = 'quit-button';
+        quitButton.style.position = 'fixed';
+        quitButton.style.top = '10px';
+        quitButton.style.right = '10px';
+        quitButton.style.zIndex = '1000';
+        quitButton.addEventListener('click', handleQuit);
+        document.body.appendChild(quitButton);
+      }
+
+      function handleQuit() {
+        if (confirm('Are you sure you want to quit? Your progress will be saved.')) {
+          savePartialDataToCSV();
+          alert('Thank you for participating. Your partial data has been saved.');
+
+          window.location.reload();
+        }
+      }
+
+      function savePartialDataToCSV() {
+        const header = [
+          'Test Date', 'Experimenter Name', 'Participant ID', 'Participant Age', 'Participant Sex',
+          'Selected Probability', 'Elf Slider Value', 'Wolf Slider Value', 'Princess Slider Value', 'Thief Slider Value',
+          'Episode', 'Round', 'Choice', 'Reality', 'Coins Earned'
+        ];
+
+        const dataRows = [];
+
+        const baseInfo = [
+          participantInfo.test_date || '',
+          participantInfo.experimenter || '',
+          participantInfo.SID || '',
+          participantInfo.age || '',
+          participantInfo.sex || '',
+          selectedProbability || '',
+          document.getElementById('elfSlider')?.value || '',
+          document.getElementById('wolfSlider')?.value || '',
+          document.getElementById('monsterSlider')?.value || '',
+          document.getElementById('monsterSlider')?.value || ''
+        ];
+
+        function addEpisodeRows(episode, choices, realities) {
+          if (choices.length === 0) return; 
+
+          for (let i = 0; i < choices.length; i++) {
+            let coinsEarned = 0;
+            if (choices[i] !== 'observe') {
+              coinsEarned = choices[i] === realities[i] ? 1 : 0;
+            }
+
+            dataRows.push([
+              ...baseInfo,
+              episode,
+              i + 1,
+              choices[i],
+              realities[i],
+              coinsEarned
+            ]);
+          }
+        }
+
+        addEpisodeRows(1, choices1, realities1);
+        addEpisodeRows(2, choices2, realities2);
+
+        if (dataRows.length === 0) {
+          dataRows.push([...baseInfo, '', '', '', '', '']);
+        }
+
+        const csvContent = [header, ...dataRows].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", `participant_${participantInfo.SID || 'unknown'}_partial_data.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
 
       const n_arms = 2;
       const n_steps = 4;
@@ -406,6 +593,45 @@
         'game-screen-2': 20
       };
 
+      let practiceTrials = [];
+      let mainTrials = [];
+
+      let selectedProbability;
+      let practiceTrialCount;
+
+      function generateTrials(numTrials, probability) {
+        let trials = [];
+        const rewardDoor = Math.random() < 0.5 ? 'brown' : 'blue';
+        const otherDoor = rewardDoor === 'brown' ? 'blue' : 'brown';
+
+        let rewardCount = Math.round(numTrials * probability);
+
+        for (let i = 0; i < rewardCount; i++) {
+          trials.push(rewardDoor);
+        }
+        for (let i = rewardCount; i < numTrials; i++) {
+          trials.push(otherDoor);
+        }
+
+        for (let i = trials.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [trials[i], trials[j]] = [trials[j], trials[i]];
+        }
+
+        return trials;
+      }
+
+      function initializeTrials(probability) {
+        rewards_total_1 = 0;
+        rewards_total_2 = 0;
+
+        practiceTrials = generateTrials(practiceTrialCount, probability);
+        mainTrials = generateTrials(20, probability);
+
+        console.log('Practice Trials:', practiceTrials);
+        console.log('Main Trials:', mainTrials);
+      }
+
       function setup() {
         rewards_tally = 0;
         transitions_ep = [];
@@ -420,14 +646,19 @@
       }
 
       function setGridLayout(container, n) {
-        const columns = n === 4 ? 2 : 5;
-        container.style.gridTemplateColumns = `repeat(${columns}, auto)`;
+        if (n === 5) {
+          container.style.gridTemplateColumns = 'repeat(3, auto)';
+          container.style.gridTemplateRows = 'repeat(2, auto)';
+        } else {
+          const columns = n === 4 ? 2 : 5;
+          container.style.gridTemplateColumns = `repeat(${columns}, auto)`;
+        }
       }
 
       function createIcon(type) {
         const icon = document.createElement('img');
         icon.className = 'icon';
-        icon.src = `/Users/norac/Desktop/gambling/pics/${type}.png`;
+        icon.src = `/Users/norac/Desktop/observebet/pics/${type}.png`;
         icon.alt = type;
         icon.dataset.type = type;
         icon.style.pointerEvents = 'auto';  
@@ -456,64 +687,159 @@
       }
 
       function replaceWithChosenImage(group, type) {
-        const chosenImage = document.createElement('img');
-        chosenImage.className = 'chosen-image';
-        chosenImage.src = `/Users/norac/Desktop/gambling/pics/chosen${type}.png`;
-        chosenImage.alt = `Chosen ${type}`;
-        group.innerHTML = '';
-        group.appendChild(chosenImage);
-      }
+  const chosenImage = document.createElement('img');
+  chosenImage.className = 'chosen-image';
+
+  if (currentGameScreen === 'game-screen-2') {
+
+    switch(type) {
+      case 'observe':
+        chosenImage.src = Math.random() < 0.5 
+          ? '/Users/norac/Desktop/observebet/video/Slide.1.png'
+          : '/Users/norac/Desktop/observebet/video/Slide.2.png';
+        break;
+      case 'blue':
+        chosenImage.src = '/Users/norac/Desktop/observebet/pics/chosenblue.png';
+        break;
+      case 'brown':
+        chosenImage.src = '/Users/norac/Desktop/observebet/pics/chosenbrown.png';
+        break;
+      default:
+        console.error('Unexpected type in replaceWithChosenImage:', type);
+        return;
+    }
+  } else {
+
+    switch(type) {
+      case 'observe':
+        chosenImage.src = Math.random() < 0.5 
+          ? '/Users/norac/Desktop/observebet/video/elfblue.png'
+          : '/Users/norac/Desktop/observebet/video/elfbrown.png';
+        break;
+      case 'blue':
+        chosenImage.src = '/Users/norac/Desktop/observebet/pics/chosenblue.png';
+        break;
+      case 'brown':
+        chosenImage.src = '/Users/norac/Desktop/observebet/pics/chosenbrown.png';
+        break;
+      default:
+        console.error('Unexpected type in replaceWithChosenImage:', type);
+        return;
+    }
+  }
+
+  chosenImage.alt = `Chosen ${type}`;
+  group.innerHTML = '';
+  group.appendChild(chosenImage);
+}
+
+      let lastClickedIndex = -1;
 
       function handleIconClick(event) {
         const icon = event.target.closest('.icon');  
         if (!icon) return;  
 
         const group = icon.closest('.group');
-        if (!group || group.dataset.interacted === 'true') return;
+        if (!group) return;
+
+        const currentIndex = parseInt(group.dataset.index);
+
+        if (currentIndex !== lastClickedIndex + 1) {
+          alert("Please select icons from left to right, top to bottom.");
+          return;
+        }
+
+        if (group.dataset.interacted === 'true') return;
 
         event.stopPropagation();  
 
         let chosenType;
         switch (icon.dataset.type) {
           case 'glasses':
-            chosenType = 'elf';
-            break;
-          case 'browndoor':
-            chosenType = 'brown';
+            chosenType = 'observe';
             break;
           case 'bluedoor':
             chosenType = 'blue';
             break;
+          case 'browndoor':
+            chosenType = 'brown';
+            break;
           default:
+            console.error('Unexpected icon type:', icon.dataset.type);
             return;  
         }
+
+        console.log('Chosen type:', chosenType);  
 
         replaceWithChosenImage(group, chosenType);
 
         group.dataset.interacted = 'true';
+        lastClickedIndex = currentIndex;
         groupsInteracted++;
 
-        if (groupsInteracted === totalGroups[currentGameScreen]) {
-          setTimeout(() => {
+        const currentChoices = currentGameScreen === 'game-screen' ? choices1 : choices2;
+        const currentRealities = currentGameScreen === 'game-screen' ? realities1 : realities2;
+        const currentTrials = currentGameScreen === 'game-screen' ? practiceTrials : mainTrials;
+
+        currentChoices.push(chosenType);
+
+        if (chosenType === 'observe') {
+          currentRealities.push(currentTrials[groupsInteracted - 1]);
+        } else {
+          const trialOutcome = currentTrials[groupsInteracted - 1];
+          currentRealities.push(trialOutcome);
+          if (chosenType === trialOutcome) {
             if (currentGameScreen === 'game-screen') {
-              showScreen('instruction-page-1');
-            } else if (currentGameScreen === 'game-screen-2') {
-              showScreen('instruction-page-4');
+              rewards_total_1++;
+            } else {
+              rewards_total_2++;
             }
-            groupsInteracted = 0;
-            document.querySelectorAll('.group').forEach(g => g.dataset.interacted = 'false');
-          }, 3000);
+          }
         }
+
+        console.log('Current choices:', currentChoices);
+        console.log('Current realities:', currentRealities);
+
+        if (groupsInteracted === totalGroups[currentGameScreen]) {
+          showContinueButton();
+        }
+      }
+
+      function showContinueButton() {
+        const continueButton = document.createElement('button');
+        continueButton.textContent = 'Continue';
+        continueButton.id = 'continue-button';
+        continueButton.style.display = 'block';
+        continueButton.style.margin = '20px auto';
+        continueButton.addEventListener('click', handleContinue);
+
+        const container = document.getElementById(currentGameScreen);
+        container.appendChild(continueButton);
+      }
+
+      function handleContinue() {
+        if (currentGameScreen === 'game-screen') {
+          showScreen('elfslider1');
+        } else if (currentGameScreen === 'game-screen-2') {
+          showScreen('instruction-page-5');
+        }
+        groupsInteracted = 0;
+        lastClickedIndex = -1;
+        document.querySelectorAll('.group').forEach(g => g.dataset.interacted = 'false');
+        document.getElementById('continue-button').remove();
       }
 
       function initializeGame(containerId, gridSize) {
         const gameContainer = document.getElementById(containerId);
         gameContainer.innerHTML = '';
-        setGridLayout(gameContainer, gridSize);
+        gameContainer.dataset.groups = gridSize;
         groupsInteracted = 0;
+        lastClickedIndex = -1;
+
+        setGridLayout(gameContainer, gridSize);
 
         for (let i = 0; i < gridSize; i++) {
-          const isLarge = gridSize === 4;
+          const isLarge = gridSize <= 5;
           const group = createGroup(i, isLarge);
           gameContainer.appendChild(group);
         }
@@ -521,38 +847,140 @@
         gameContainer.addEventListener('click', handleIconClick);
       }
 
+      function saveData(){
+
+      }
+
+      function transitions_pairing(transition) {
+        const hundreds = Math.floor(transition / 100);
+        const tens = Math.floor(transition / 10) % 10;
+        const ones = transition % 10;
+        return (hundreds) * 5 + (tens) * 2 + (ones % 2) + 1;
+      }
+
+      function createEpisodeSummary(episodeNumber, choices, realities, coins) {
+        console.log("Episode:", episodeNumber);
+        console.log("Choices:", choices);
+        console.log("Realities:", realities);
+
+        const container = document.createElement('div');
+        container.className = 'episode-summary';
+
+        const coinsEarned = document.createElement('p');
+        coinsEarned.textContent = `Coins earned this episode: ${coins}`;
+        coinsEarned.className = 'summary-coins';
+        container.appendChild(coinsEarned);
+
+        const grid = document.createElement('div');
+        grid.className = 'summary-grid';
+
+        for (let i = 0; i < 20; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'summary-cell';
+
+          if (i < choices.length) {
+            const realityLabel = document.createElement('div');
+            realityLabel.textContent = 'Reality';
+            realityLabel.className = 'summary-label';
+            cell.appendChild(realityLabel);
+
+            const realityImg = document.createElement('img');
+            if (episodeNumber === 2) {
+              realityImg.src = realities[i] === 'brown'
+                ? '/Users/norac/Desktop/observebet/video/Slide.1.png'
+                : '/Users/norac/Desktop/observebet/video/Slide.2.png';
+            } else {
+              realityImg.src = realities[i] === 'brown'
+                ? '/Users/norac/Desktop/observebet/pics/chosenelf.png'
+                : '/Users/norac/Desktop/observebet/pics/elfcoinblue.png';
+            }
+            realityImg.alt = 'Reality';
+            realityImg.className = 'summary-img';
+            cell.appendChild(realityImg);
+
+            const choiceLabel = document.createElement('div');
+            choiceLabel.textContent = 'Your Choice';
+            choiceLabel.className = 'summary-label';
+            cell.appendChild(choiceLabel);
+
+            const choiceImg = document.createElement('img');
+            if (choices[i] === 'observe') {
+              choiceImg.src = '/Users/norac/Desktop/observebet/pics/glasses.png';
+            } else if (choices[i] === 'brown') {
+              choiceImg.src = '/Users/norac/Desktop/observebet/pics/browndoor.png';
+            } else {
+              choiceImg.src = '/Users/norac/Desktop/observebet/pics/bluedoor.png';
+            }
+            choiceImg.alt = choices[i];
+            choiceImg.className = 'summary-img';
+            cell.appendChild(choiceImg);
+
+            const numberLabel = document.createElement('div');
+            numberLabel.textContent = i + 1;
+            numberLabel.className = 'summary-number';
+            cell.appendChild(numberLabel);
+          } else {
+
+            cell.style.visibility = 'hidden';
+          }
+
+          grid.appendChild(cell);
+        }
+
+        container.appendChild(grid);
+        return container;
+      }
+
+      function showEpisodeSummary(episodeNumber) {
+        const choices = episodeNumber === 1 ? choices1 : choices2;
+        const realities = episodeNumber === 1 ? realities1 : realities2;
+        const coins = episodeNumber === 1 ? rewards_total_1 : rewards_total_2;
+        const summaryContainer = episodeNumber === 1 ? 'episode-1-summary' : 'episode-2-summary';
+
+        const summary = createEpisodeSummary(episodeNumber, choices, realities, coins);
+        document.getElementById(summaryContainer).innerHTML = '';
+        document.getElementById(summaryContainer).appendChild(summary);
+      }
+
+      let choices1 = [];
+      let choices2 = [];
+      let realities1 = [];
+      let realities2 = [];
+
+      let participantInfo = {};
+
       document.getElementById('info-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const participantInfo = Object.fromEntries(formData);
+        participantInfo = Object.fromEntries(formData);
         console.log('Participant Info:', participantInfo);
         showScreen('consent-screen');
       });
+
       document.getElementById('consent-button').addEventListener('click', () => {
-        showScreen('instruction1');
+        addQuitButton(); 
+        showScreen('probability-selection');
       });
-      document.getElementById('decline-button').addEventListener('click', () => {
-        alert("You've declined to consent to our experiment. Thank you for your time.");
-      });
-      document.querySelectorAll('.next-button, .continue-button').forEach(button => {
+
+      document.querySelectorAll('.prob-button').forEach(button => {
         button.addEventListener('click', (e) => {
-          const nextScreen = e.target.dataset.next;
-          if (nextScreen) {
-            if (e.target.closest('div').id === 'elfslider1') {
-              console.log(`Elf slider value: ${document.getElementById('elfSlider').value}`);
-            } else if (e.target.closest('div').id === 'wolfslider1') {
-              console.log(`Wolf slider value: ${document.getElementById('wolfSlider').value}`);
-            } else if (e.target.closest('div').id === 'instruction-page-5') {
-              console.log(`Monster slider value: ${document.getElementById('monsterSlider').value}`);
-            }
-            showScreen(nextScreen);
-            if (nextScreen === 'game-screen-2') {
-              currentGameScreen = 'game-screen-2';
-              initializeGame('gameContainer2', totalGroups[currentGameScreen]);
-            }
+          selectedProbability = parseFloat(e.target.dataset.probability);
+          console.log('Selected probability:', selectedProbability);
+          practiceTrialCount = selectedProbability === 0.8 ? 5 : 4;
+          initializeTrials(selectedProbability);
+
+          const roundsInstruction = document.getElementById('rounds-instruction');
+          if (selectedProbability === 0.8) {
+            roundsInstruction.textContent = "This practice game has 5 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.";
+          } else {
+            roundsInstruction.textContent = "This practice game has 4 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.";
           }
+
+          addQuitButton(); 
+          showScreen('instruction1');
         });
       });
+
       document.querySelectorAll('.number-button').forEach(button => {
         button.addEventListener('click', (e) => {
           const currentScreen = e.target.closest('div[id^="instruction"]').id;
@@ -560,47 +988,135 @@
             'instruction1': 'instruction2',
             'instruction2': 'instruction3',
             'instruction3': 'instruction4',
-            'instruction4': 'elfslider1'
-          } [currentScreen];
+            'instruction4': 'pretrial'
+          }[currentScreen];
           if (nextScreen) {
             console.log(`Selected answer: ${e.target.dataset.value}`);
             showScreen(nextScreen);
           }
         });
       });
- document.getElementById('ready-button').addEventListener('click', () => {
-  showScreen('game-screen');
-  currentGameScreen = 'game-screen';
-  initializeGame('gameContainer', totalGroups[currentGameScreen]);
-});
 
-      document.querySelectorAll('.bumber-button').forEach(button => {
-        button.addEventListener('click', function() {
-
-          const value = this.getAttribute('data-value');
-          console.log('Selected value:', value);
-
-          const nextPage = this.getAttribute('data-next');
-          if (nextPage) {
-            document.getElementById(nextPage).classList.remove('hidden');
-            this.closest('.instruction-page').classList.add('hidden');
-          }
-        });
+      document.getElementById('ready-button').addEventListener('click', () => {
+        showScreen('game-screen');
+        currentGameScreen = 'game-screen';
+        initializeGame('gameContainer', practiceTrialCount);
       });
-      document.querySelectorAll('.continue-button').forEach(button => {
+
+      document.querySelectorAll('.next-button, .continue-button').forEach(button => {
         button.addEventListener('click', (e) => {
           const nextScreen = e.target.dataset.next;
           if (nextScreen) {
-            showScreen(nextScreen);
-            if (nextScreen === 'game-screen-2') {
+            if (e.target.closest('div').id === 'elfslider1') {
+              console.log(`Elf slider value: ${document.getElementById('elfSlider').value}`);
+              showScreen('wolfslider1');
+            } else if (e.target.closest('div').id === 'wolfslider1') {
+              console.log(`Wolf slider value: ${document.getElementById('wolfSlider').value}`);
+              showEpisodeSummary(1);
+              showScreen('instruction-page-1');
+            } else if (nextScreen === 'instruction-page-2') {
+              showScreen('instruction-page-2');
+            } else if (nextScreen === 'instruction-page-3') {
+              showScreen('instruction-page-3');
+            } else if (nextScreen === 'game-screen-2') {
               currentGameScreen = 'game-screen-2';
               initializeGame('gameContainer2', totalGroups[currentGameScreen]);
+              showScreen('game-screen-2');
+            } else if (e.target.closest('div').id === 'instruction-page-5') {
+              console.log(`Princess slider value: ${document.getElementById('monsterSlider').value}`);
+              showScreen('instruction-page-6');
+            } else if (e.target.closest('div').id === 'instruction-page-6') {
+              console.log(`Wolf slider value: ${document.getElementById('monsterSlider').value}`);
+              showEpisodeSummary(2);
+              showScreen('end-screen');
             }
           }
         });
       });
+
+      document.querySelectorAll('.bumber-button').forEach(button => {
+        button.addEventListener('click', function() {
+          const value = this.getAttribute('data-value');
+          console.log('Selected value:', value);
+          const nextPage = this.getAttribute('data-next');
+          if (nextPage) {
+            showScreen(nextPage);
+          }
+        });
+      });
+
       document.getElementById('monsterSlider').addEventListener('change', function() {
         console.log('Monster slider value:', this.value);
+      });
+
+      function saveDataToCSV() {
+
+        const header = [
+          'Test Date', 'Experimenter Name', 'Participant ID', 'Participant Age', 'Participant Sex',
+          'Selected Probability', 'Elf Slider Value', 'Wolf Slider Value', 'Princess Slider Value', 'Thief Slider Value',
+          'Episode', 'Round', 'Choice', 'Reality', 'Coins Earned'
+        ];
+
+        const dataRows = [];
+
+        const baseInfo = [
+          participantInfo.test_date || '',
+          participantInfo.experimenter || '',
+          participantInfo.SID || '',
+          participantInfo.age || '',
+          participantInfo.sex || '',
+          selectedProbability || '',
+          document.getElementById('elfSlider')?.value || '',
+          document.getElementById('wolfSlider')?.value || '',
+          document.getElementById('monsterSlider')?.value || '',
+          document.getElementById('monsterSlider')?.value || ''
+        ];
+
+        function addEpisodeRows(episode, choices, realities) {
+          if (choices.length === 0) return; 
+
+          for (let i = 0; i < choices.length; i++) {
+            let coinsEarned = 0;
+            if (choices[i] !== 'observe') {
+              coinsEarned = choices[i] === realities[i] ? 1 : 0;
+            }
+
+            dataRows.push([
+              ...baseInfo,
+              episode,
+              i + 1,
+              choices[i],
+              realities[i],
+              coinsEarned
+            ]);
+          }
+        }
+
+        addEpisodeRows(1, choices1, realities1);
+        addEpisodeRows(2, choices2, realities2);
+
+        if (dataRows.length === 0) {
+          dataRows.push([...baseInfo, '', '', '', '', '']);
+        }
+
+        const csvContent = [header, ...dataRows].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", `participant_${participantInfo.SID}_data.csv`);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+
+      document.querySelector('#end-screen .continue-button').addEventListener('click', (e) => {
+        saveDataToCSV();
+        alert('Thank you for participating! Your data has been saved.');
       });
 
       showScreen('participant-info');
