@@ -72,27 +72,27 @@
 
       .game-container {
         display: grid;
-        gap: 20px; 
+        gap: 20px; /* Increased gap between groups */
         justify-content: center;
-        max-width: 1200px; 
+        max-width: 1200px; /* Increased max-width to allow for more spacing */
         margin: 0 auto;
-        padding: 20px; 
+        padding: 20px; /* Added padding to the container */
       }
 
       .group {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 15px; 
-        border: 1px solid #e0e0e0; 
-        border-radius: 8px; 
-        background-color: #f9f9f9; 
+        padding: 15px; /* Added padding to each group */
+        border: 1px solid #e0e0e0; /* Optional: adds a light border around each group */
+        border-radius: 8px; /* Optional: rounds the corners of the groups */
+        background-color: #f9f9f9; /* Optional: gives a slight background color to each group */
       }
 
       .group.large {
-        width: 220px; 
-        height: 220px; 
-        margin: 10px; 
+        width: 220px; /* Slightly increased width */
+        height: 220px; /* Slightly increased height */
+        margin: 10px; /* Reduced margin as we're using grid gap */
       }
 
       .doors {
@@ -217,6 +217,7 @@
         }
       }
 
+      /* Adjust the grid layout for different screen sizes and number of groups */
       @media (min-width: 768px) {
         .game-container[data-groups="4"],
         .game-container[data-groups="5"] {
@@ -326,7 +327,7 @@
       <div id="instruction1" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/observebet/video/Scene 1- Practice.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="https://github.com/ey242/OVB/raw/main/public/stim/Scene%201-%20Practice.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -342,8 +343,8 @@
       </div>
       <div id="instruction2" class="instruction-div hidden">
         <div class="video-container">
-          <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/observebet/video/Practice- 0.5.mp4" type="video/mp4"> Your browser does not support the video tag.
+          <video width="600" height="300" controls id="probability-video">
+            <source src="" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -360,7 +361,7 @@
       <div id="instruction3" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/observebet/video/Practice- Part 2.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="https://github.com/ey242/OVB/raw/main/public/stim/Practice-%20Part%202.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -377,7 +378,7 @@
       <div id="instruction4" class="instruction-div hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
-            <source src="/Users/norac/Desktop/observebet/video/Practice- Part 3.mp4" type="video/mp4"> Your browser does not support the video tag.
+            <source src="https://github.com/ey242/OVB/raw/main/public/stim/Practice-%20Part%203.mp4" type="video/mp4"> Your browser does not support the video tag.
           </video>
         </div>
         <div class="button-container">
@@ -392,6 +393,8 @@
         </div>
       </div>
 
+
+
       <div id="elfslider1" class="hidden">
         <img src="/Users/norac/Desktop/observebet/video/elfdoors.png" alt="Elf Doors" style="width: 750px;">
         <p>
@@ -403,6 +406,8 @@
         <button class="next-button" data-next="wolfslider1">Next</button>
       </div>
 
+
+
       <div id="wolfslider1" class="hidden">
         <img src="/Users/norac/Desktop/observebet/video/wolfdoors.png" alt="Wolf Doors" style="width: 750px;">
         <p>
@@ -413,6 +418,9 @@
         </div>
         <button class="next-button" data-next="pretrial">Next</button>
       </div>
+
+
+
 
       <div id="pretrial" class="hidden">
         <p id="practice-rounds-text">Now we are going to enter the practice game. This is to practice for your real game later where you will get to win stickers for the number of coins you win. So you want to learn as much as you can in the practice game to do well in the real game!</p>
@@ -487,8 +495,9 @@
 </div>
     </div>
 
-    <script>
 
+    <script>
+      // Add this function near the top of your script
       function addQuitButton() {
         const quitButton = document.createElement('button');
         quitButton.textContent = 'Quit';
@@ -505,7 +514,7 @@
         if (confirm('Are you sure you want to quit? Your progress will be saved.')) {
           savePartialDataToCSV();
           alert('Thank you for participating. Your partial data has been saved.');
-
+          // Optionally, redirect to a thank you page or reload the experiment
           window.location.reload();
         }
       }
@@ -519,6 +528,7 @@
 
         const dataRows = [];
 
+        // Add participant info
         const baseInfo = [
           participantInfo.test_date || '',
           participantInfo.experimenter || '',
@@ -533,8 +543,8 @@
         ];
 
         function addEpisodeRows(episode, choices, realities) {
-          if (choices.length === 0) return; 
-
+          if (choices.length === 0) return; // Skip if no choices made in this episode
+          
           for (let i = 0; i < choices.length; i++) {
             let coinsEarned = 0;
             if (choices[i] !== 'observe') {
@@ -555,6 +565,7 @@
         addEpisodeRows(1, choices1, realities1);
         addEpisodeRows(2, choices2, realities2);
 
+        // If no choices were made, add at least one row with participant info
         if (dataRows.length === 0) {
           dataRows.push([...baseInfo, '', '', '', '', '']);
         }
@@ -603,28 +614,30 @@
         let trials = [];
         const rewardDoor = Math.random() < 0.5 ? 'brown' : 'blue';
         const otherDoor = rewardDoor === 'brown' ? 'blue' : 'brown';
-
+        
         let rewardCount = Math.round(numTrials * probability);
-
+        
+        // Fill the array with the correct number of reward and non-reward outcomes
         for (let i = 0; i < rewardCount; i++) {
           trials.push(rewardDoor);
         }
         for (let i = rewardCount; i < numTrials; i++) {
           trials.push(otherDoor);
         }
-
+        
+        // Shuffle the array to randomize the order
         for (let i = trials.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [trials[i], trials[j]] = [trials[j], trials[i]];
         }
-
+        
         return trials;
       }
 
       function initializeTrials(probability) {
         rewards_total_1 = 0;
         rewards_total_2 = 0;
-
+        
         practiceTrials = generateTrials(practiceTrialCount, probability);
         mainTrials = generateTrials(20, probability);
 
@@ -689,9 +702,9 @@
       function replaceWithChosenImage(group, type) {
   const chosenImage = document.createElement('img');
   chosenImage.className = 'chosen-image';
-
+  
   if (currentGameScreen === 'game-screen-2') {
-
+    // For the n = 20 group (game-screen-2)
     switch(type) {
       case 'observe':
         chosenImage.src = Math.random() < 0.5 
@@ -709,7 +722,7 @@
         return;
     }
   } else {
-
+    // For the practice group (game-screen)
     switch(type) {
       case 'observe':
         chosenImage.src = Math.random() < 0.5 
@@ -727,7 +740,7 @@
         return;
     }
   }
-
+  
   chosenImage.alt = `Chosen ${type}`;
   group.innerHTML = '';
   group.appendChild(chosenImage);
@@ -744,6 +757,7 @@
 
         const currentIndex = parseInt(group.dataset.index);
 
+        // Check if this is the next valid group to click
         if (currentIndex !== lastClickedIndex + 1) {
           alert("Please select icons from left to right, top to bottom.");
           return;
@@ -920,7 +934,7 @@
             numberLabel.className = 'summary-number';
             cell.appendChild(numberLabel);
           } else {
-
+            // Fill empty cells for consistency
             cell.style.visibility = 'hidden';
           }
 
@@ -958,7 +972,7 @@
       });
 
       document.getElementById('consent-button').addEventListener('click', () => {
-        addQuitButton(); 
+        addQuitButton(); // Add quit button after consent
         showScreen('probability-selection');
       });
 
@@ -968,15 +982,26 @@
           console.log('Selected probability:', selectedProbability);
           practiceTrialCount = selectedProbability === 0.8 ? 5 : 4;
           initializeTrials(selectedProbability);
-
+          
+          // Set the correct video source based on the selected probability
+          const probabilityVideo = document.getElementById('probability-video');
+          if (selectedProbability === 0.5) {
+            probabilityVideo.src = "https://github.com/ey242/OVB/raw/main/public/stim/Practice-%200.5.mp4";
+          } else if (selectedProbability === 0.8) {
+            probabilityVideo.src = "https://github.com/ey242/OVB/raw/main/public/stim/Practice-%200.75.mp4";
+          } else if (selectedProbability === 1.0) {
+            probabilityVideo.src = "https://github.com/ey242/OVB/raw/main/public/stim/Practice-1.0.mp4";
+          }
+          
+          // Update the instruction text based on the selected probability
           const roundsInstruction = document.getElementById('rounds-instruction');
           if (selectedProbability === 0.8) {
             roundsInstruction.textContent = "This practice game has 5 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.";
           } else {
             roundsInstruction.textContent = "This practice game has 4 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.";
           }
-
-          addQuitButton(); 
+          
+          addQuitButton(); // Add the quit button after probability selection
           showScreen('instruction1');
         });
       });
@@ -1050,15 +1075,17 @@
       });
 
       function saveDataToCSV() {
-
+        // Create the header row
         const header = [
           'Test Date', 'Experimenter Name', 'Participant ID', 'Participant Age', 'Participant Sex',
           'Selected Probability', 'Elf Slider Value', 'Wolf Slider Value', 'Princess Slider Value', 'Thief Slider Value',
           'Episode', 'Round', 'Choice', 'Reality', 'Coins Earned'
         ];
 
+        // Create the data rows
         const dataRows = [];
 
+        // Add participant info
         const baseInfo = [
           participantInfo.test_date || '',
           participantInfo.experimenter || '',
@@ -1072,9 +1099,10 @@
           document.getElementById('monsterSlider')?.value || ''
         ];
 
+        // Function to add rows for an episode
         function addEpisodeRows(episode, choices, realities) {
-          if (choices.length === 0) return; 
-
+          if (choices.length === 0) return; // Skip if no choices made in this episode
+          
           for (let i = 0; i < choices.length; i++) {
             let coinsEarned = 0;
             if (choices[i] !== 'observe') {
@@ -1092,15 +1120,19 @@
           }
         }
 
+        // Add rows for both episodes
         addEpisodeRows(1, choices1, realities1);
         addEpisodeRows(2, choices2, realities2);
 
+        // If no choices were made, add at least one row with participant info
         if (dataRows.length === 0) {
           dataRows.push([...baseInfo, '', '', '', '', '']);
         }
 
+        // Combine header and data rows
         const csvContent = [header, ...dataRows].map(row => row.join(',')).join('\n');
 
+        // Create and download the CSV file
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         if (link.download !== undefined) {
