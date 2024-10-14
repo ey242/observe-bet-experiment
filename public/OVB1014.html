@@ -667,38 +667,37 @@
         }
       }
 
+      function createIcon(type) {
+        const icon = document.createElement('img');
+        icon.className = 'icon';
+        icon.src = `https://github.com/ey242/OVB/raw/main/public/stim/${type}.png`;
+        icon.alt = type;
+        icon.dataset.type = type;
+        icon.style.pointerEvents = 'auto';  
+        return icon;
+      }
+
       function createGroup(index, isLarge = false) {
-  const group = document.createElement('div');
-  group.className = 'group';
-  if (isLarge) group.classList.add('large');
-  group.dataset.index = index;
-  group.dataset.interacted = 'false';
+        const group = document.createElement('div');
+        group.className = 'group';
+        if (isLarge) group.classList.add('large');
+        group.dataset.index = index;
+        group.dataset.interacted = 'false';
 
-  const glasses = createIcon('Choose3');
-  const doors = document.createElement('div');
-  doors.className = 'doors';
-  const blueDoor = createIcon('Choose2');
-  const brownDoor = createIcon('Choose1');
+        const glasses = createIcon('glasses');
+        const doors = document.createElement('div');
+        doors.className = 'doors';
+        const blueDoor = createIcon('bluedoor');
+        const brownDoor = createIcon('browndoor');
 
-  doors.appendChild(blueDoor);
-  doors.appendChild(brownDoor);
-  group.appendChild(glasses);
-  group.appendChild(doors);
+        doors.appendChild(blueDoor);
+        doors.appendChild(brownDoor);
+        group.appendChild(glasses);
+        group.appendChild(doors);
 
-  return group;
-}
+        return group;
+      }
 
-function createIcon(type) {
-  const icon = document.createElement('img');
-  icon.className = 'icon';
-  
-  icon.src = `https://github.com/ey242/OVB/raw/main/public/stim/${type}.png`;
-  
-  icon.alt = type;
-  icon.dataset.type = type;
-  icon.style.pointerEvents = 'auto';  
-  return icon;
-}
 
       function replaceWithChosenImage(group, type) {
         const chosenImage = document.createElement('img');
