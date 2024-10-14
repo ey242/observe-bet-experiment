@@ -667,51 +667,38 @@
         }
       }
 
+      function createGroup(index, isLarge = false) {
+  const group = document.createElement('div');
+  group.className = 'group';
+  if (isLarge) group.classList.add('large');
+  group.dataset.index = index;
+  group.dataset.interacted = 'false';
+
+  const glasses = createIcon('Choose3');
+  const doors = document.createElement('div');
+  doors.className = 'doors';
+  const blueDoor = createIcon('Choose2');
+  const brownDoor = createIcon('Choose1');
+
+  doors.appendChild(blueDoor);
+  doors.appendChild(brownDoor);
+  group.appendChild(glasses);
+  group.appendChild(doors);
+
+  return group;
+}
+
 function createIcon(type) {
   const icon = document.createElement('img');
   icon.className = 'icon';
   
-  // Update the image sources
-  switch(type) {
-    case 'glasses':
-      icon.src = 'https://github.com/ey242/OVB/raw/main/public/stim/Choose3.png';
-      break;
-    case 'bluedoor':
-      icon.src = 'https://github.com/ey242/OVB/raw/main/public/stim/Choose2.png';
-      break;
-    case 'browndoor':
-      icon.src = 'https://github.com/ey242/OVB/raw/main/public/stim/Choose1.png';
-      break;
-    default:
-      console.error('Unexpected icon type:', type);
-      return;
-  }
+  icon.src = `https://github.com/ey242/OVB/raw/main/public/stim/${type}.png`;
   
   icon.alt = type;
   icon.dataset.type = type;
   icon.style.pointerEvents = 'auto';  
   return icon;
 }
-      function createGroup(index, isLarge = false) {
-        const group = document.createElement('div');
-        group.className = 'group';
-        if (isLarge) group.classList.add('large');
-        group.dataset.index = index;
-        group.dataset.interacted = 'false';
-
-        const glasses = createIcon('glasses');
-        const doors = document.createElement('div');
-        doors.className = 'doors';
-        const blueDoor = createIcon('bluedoor');
-        const brownDoor = createIcon('browndoor');
-
-        doors.appendChild(blueDoor);
-        doors.appendChild(brownDoor);
-        group.appendChild(glasses);
-        group.appendChild(doors);
-
-        return group;
-      }
 
       function replaceWithChosenImage(group, type) {
         const chosenImage = document.createElement('img');
