@@ -473,7 +473,7 @@
         <center>Which door do you think the kind princess prefers to hide behind?</center>
       </p>
       <div class="slider-container" style="width: 127%;">
-        <input type="range" min="0" max="100" value="50" class="slider" id="monsterSlider">
+        <input type="range" min="0" max="100" value="50" class="slider" id="princessSlider">
       </div>
       <button class="continue-button" data-next="instruction-page-6">Continue</button>
     </div>
@@ -483,7 +483,7 @@
       <div style="text-align: center;"> Which door do you think the mean thief prefers to hide behind? </div>
       </p>
       <div class="slider-container" style="width: 127%;">
-        <input type="range" min="0" max="100" value="50" class="slider" id="monsterSlider">
+        <input type="range" min="0" max="100" value="50" class="slider" id="thiefSlider">
       </div>
       <button class="continue-button" data-next="end-screen">Continue</button>
     </div>
@@ -537,8 +537,8 @@
           selectedProbability || '',
           document.getElementById('elfSlider')?.value || '',
           document.getElementById('wolfSlider')?.value || '',
-          document.getElementById('monsterSlider')?.value || '',
-          document.getElementById('monsterSlider')?.value || ''
+          document.getElementById('princessSlider')?.value || '',
+          document.getElementById('thiefSlider')?.value || ''
         ];
 
         function addEpisodeRows(episode, choices, realities) {
@@ -1051,10 +1051,10 @@
               initializeGame('gameContainer2', totalGroups[currentGameScreen]);
               showScreen('game-screen-2');
             } else if (e.target.closest('div').id === 'instruction-page-5') {
-              console.log(`Princess slider value: ${document.getElementById('monsterSlider').value}`);
+              console.log(`Princess slider value: ${document.getElementById('princessSlider').value}`);
               showScreen('instruction-page-6');
             } else if (e.target.closest('div').id === 'instruction-page-6') {
-              console.log(`Wolf slider value: ${document.getElementById('monsterSlider').value}`);
+              console.log(`Thief slider value: ${document.getElementById('thiefSlider').value}`);
               showEpisodeSummary(2);
               showScreen('end-screen');
             }
@@ -1073,8 +1073,12 @@
         });
       });
 
-      document.getElementById('monsterSlider').addEventListener('change', function() {
-        console.log('Monster slider value:', this.value);
+      document.getElementById('princessSlider').addEventListener('change', function() {
+        console.log('Princess slider value:', this.value);
+      });
+
+      document.getElementById('thiefSlider').addEventListener('change', function() {
+        console.log('Thief slider value:', this.value);
       });
 
       function saveDataToCSV() {
@@ -1098,8 +1102,8 @@
           selectedProbability || '',
           document.getElementById('elfSlider')?.value || '',
           document.getElementById('wolfSlider')?.value || '',
-          document.getElementById('monsterSlider')?.value || '',
-          document.getElementById('monsterSlider')?.value || ''
+          document.getElementById('princessSlider')?.value || '',
+          document.getElementById('thiefSlider')?.value || ''
         ];
 
         // Function to add rows for an episode
