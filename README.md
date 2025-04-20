@@ -4,6 +4,11 @@
 
 [[`CogSci2024`](https://escholarship.org/uc/item/2x7300qr)] [[`BibTeX`](#Citing)]
 
+<div align="center">
+    <img src="public/OVB.png" height="100%" width="100%">
+</div>
+<br>
+
 ## Running the Experiment
 
 To run the experiment, launch `OVB0104_zoom.html` on an Internet browser. All relevant stimuli to the experiment are included in the `public` folder.
