@@ -4,9 +4,9 @@
 
 [[`CogSci2024`](https://escholarship.org/uc/item/2x7300qr)] [[`BibTeX`](#Citing)]
 
-## Experiment
+## Running the Experiment
 
-To run the experiment, launch `OVB0104_zoom.html` on an Internet browser.
+To run the experiment, launch `OVB0104_zoom.html` on an Internet browser. All relevant stimuli to the experiment are included in the `public` folder.
 
 ## <a name="Citing"></a>Citing Observe-Bet
 
