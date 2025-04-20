@@ -5,7 +5,7 @@
 [[`CogSci2024`](https://escholarship.org/uc/item/2x7300qr)] [[`BibTeX`](#Citing)]
 
 <div align="center">
-    <img src="public/OVB.pdf" height="100%" width="100%">
+    <img src="public/OVB.png" height="100%" width="100%">
 </div>
 <br>
 
