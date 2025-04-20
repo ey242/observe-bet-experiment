@@ -6,7 +6,7 @@
 
 ## Experiment
 
-To run the experiment, launch OVB0104_zoom.html on an Internet browser.
+To run the experiment, launch `OVB0104_zoom.html` on an Internet browser.
 
 ## <a name="Citing"></a>Citing Observe-Bet
 
