@@ -4,7 +4,7 @@
 
 [[`CogSci2024`](https://escholarship.org/uc/item/2x7300qr)] [[`BibTeX`](#Citing)]
 
-## <a name="Citing"></a>Citing Video-TTT
+## <a name="Citing"></a>Citing Observe-Bet
 
 ```BibTeX
 @inproceedings{yiu2024observe,
