@@ -4,6 +4,11 @@
 
 [[`CogSci2024`](https://escholarship.org/uc/item/2x7300qr)] [[`BibTeX`](#Citing)]
 
+## Abstract
+
+Autonomous agents often need to decide between choosing actions that are familiar and have previously yielded positive results (exploitation) and seeking new information that could help uncover more effective actions (exploration). We present an “observe or bet” task that separates “pure exploration” from “pure exploitation”: 75 five-to-seven-year-old children, 60 adults and computational agents have to decide either to observe an outcome without reward, or to bet on an action without immediate feedback at varying probability levels. Their performances were measured against solutions from the partially observable Markov decision process and meta-RL models. Children and adults tended to choose observation more than both algorithm classes would suggest. Children also modulated their betting policy based on the probability structure and amount of evidence, exhibiting “hedging behavior” a strategy not evident in standard bandit tasks. The results provide a benchmark for reasoning about reward and information in humans and neural network models.
+
+
 <div align="center">
     <img src="public/OVB.png" height="50%" width="50%">
 </div>
