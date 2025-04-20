@@ -1,5 +1,6 @@
-This is a repository for running the observe or bet task (Yiu, Sandbrink & Gopnik, 2024). 
-The experiment is in an html file that may be hosted over an Internet server.
+#To observe or to bet? Investigating purely exploratory and purely exploitative actions in children, adults, and computational models.
 
-Citation:
-Yiu, E., Sandbrink, K. J., & Gopnik, A. (2024). To observe or to bet? Investigating purely exploratory and purely exploitative actions in children, adults, and computational models. In Proceedings of the Annual Meeting of the Cognitive Science Society (Vol. 46).
+[Eunice Yiu*](https://ey242.github.io/), [Kai Sandbrink*](https://www.psy.ox.ac.uk/people/kai-sandbrink), [Alison Gopnik](http://people.eecs.berkeley.edu/~efros/](http://alisongopnik.com/)
+
+[[`CogSci2024`]([https://arxiv.org/abs/2307.05014](https://escholarship.org/uc/item/2x7300qr))]
+
