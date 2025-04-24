@@ -12,7 +12,6 @@ Autonomous agents often need to decide between choosing actions that are familia
 <div align="center">
     <img src="public/OVB.png" height="50%" width="50%">
 </div>
-<br>
 In this experiment, participants choose either to bet on which of two doors hides the reward, or to observe both the reward and non-reward as the doors are revealed—without earning any reward.
 
 ## Running the Experiment
