@@ -602,42 +602,76 @@
 
       let selectedProbability;
       let practiceTrialCount;
-
-      function generateTrials(numTrials, probability) {
+function generateTrials(numTrials, probability) {
         let trials = [];
         
-        if (probability === 1.0) {
-          if (!window.fixedDoor) {
-            window.fixedDoor = Math.random() < 0.5 ? 'brown' : 'blue';
-          }
-          trials = Array(numTrials).fill(window.fixedDoor);
-        } else if (probability === 0.8) {
-          if (numTrials === 5) {
-            const dominantDoor = Math.random() < 0.5 ? 'brown' : 'blue';
-            const rareDoor = dominantDoor === 'brown' ? 'blue' : 'brown';
-            
-            trials = Array(4).fill(dominantDoor);
-            trials.push(rareDoor);
-            
-            window.dominantDoor = dominantDoor;
-          } else {
-            const dominantDoor = window.dominantDoor;
-            const rareDoor = dominantDoor === 'brown' ? 'blue' : 'brown';
-            
-            trials = Array(16).fill(dominantDoor);
-            for (let i = 0; i < 4; i++) {
-              trials.push(rareDoor);
+        // Determine if it's a practice round based on numTrials (4 or 5)
+        const isPracticeRound = (numTrials === 4 || numTrials === 5);
+
+        if (isPracticeRound) {
+            if (probability === 0.5) {
+                // p=0.5 practice: 2 brown, 2 blue, shuffled
+                // Corrected: Ensure exactly 2 of each door for 4 trials
+                trials = ['brown', 'brown', 'blue', 'blue'];
+                // Shuffle for independence of sequence
+                for (let i = trials.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [trials[i], trials[j]] = [trials[j], trials[i]];
+                }
+            } else if (probability === 0.8) {
+                // p=0.8 practice: 4 dominant, 1 rare, shuffled
+                const dominantDoor = Math.random() < 0.5 ? 'brown' : 'blue';
+                const rareDoor = dominantDoor === 'brown' ? 'blue' : 'brown';
+                
+                trials = Array(4).fill(dominantDoor);
+                trials.push(rareDoor);
+                
+                // Store dominantDoor for main trials to maintain consistency
+                window.dominantDoor = dominantDoor; 
+
+                // Shuffle for any kind of sequence
+                for (let i = trials.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [trials[i], trials[j]] = [trials[j], trials[i]];
+                }
+            } else if (probability === 1.0) {
+                // p=1.0 practice: 4 rounds, each door randomly chosen independently
+                for (let i = 0; i < numTrials; i++) {
+                    trials.push(Math.random() < 0.5 ? 'brown' : 'blue');
+                }
             }
-          }
-          
-          for (let i = trials.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [trials[i], trials[j]] = [trials[j], trials[i]];
-          }
-        } else {
-          for (let i = 0; i < numTrials; i++) {
-            trials.push(Math.random() < 0.5 ? 'brown' : 'blue');
-          }
+        } else { // Main trials (numTrials = 20)
+            if (probability === 1.0) {
+                // For main trials with p=1.0, a single fixed door for the whole episode
+                // If window.fixedDoor is not set, initialize it.
+                if (!window.fixedDoor) {
+                    window.fixedDoor = Math.random() < 0.5 ? 'brown' : 'blue';
+                }
+                trials = Array(numTrials).fill(window.fixedDoor);
+            } else if (probability === 0.8) {
+                // Main trials for 0.8: 16 dominant, 4 rare, shuffled. Use the dominant door from practice.
+                const dominantDoor = window.dominantDoor; // Retrieve dominant door set during practice
+                const rareDoor = dominantDoor === 'brown' ? 'blue' : 'brown';
+
+                trials = Array(16).fill(dominantDoor);
+                for (let i = 0; i < 4; i++) {
+                    trials.push(rareDoor);
+                }
+                for (let i = trials.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [trials[i], trials[j]] = [trials[j], trials[i]];
+                }
+            } else { // probability === 0.5
+                // Main trials for 0.5: exactly 10 of one door, 10 of the other, shuffled
+                const door1 = 'brown';
+                const door2 = 'blue';
+                trials = Array(10).fill(door1).concat(Array(10).fill(door2));
+                // Shuffle the trials
+                for (let i = trials.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [trials[i], trials[j]] = [trials[j], trials[i]];
+                }
+            }
         }
         
         return trials;
