@@ -635,6 +635,7 @@
       let practiceBettingRealities = [];
       let practiceCoinsEarned = 0;
       let practiceObservationSequence = []; // Stores the pre-generated sequence for practice observation
+      let practiceCoinColor = ''; // 'green' or 'purple' - determined randomly at start of practice
 
       /**
        * Shuffles an array in place.
@@ -665,10 +666,9 @@
           } else if (characterType === 'princess') {
               door1 = 'red';
               door2 = 'yellow';
-          } else if (characterType === 'coin') { // For practice session, always green
+          } else if (characterType === 'coin') { // For practice session, use the globally set practiceCoinColor
               for (let i = 0; i < numTrials; i++) {
-                  // Coin is always in green for practice, as per user's previous request.
-                  trials.push('green'); // Coin always hides behind green for practice
+                  trials.push(practiceCoinColor); // Use the randomly assigned practiceCoinColor
               }
               return trials; // Return early for coin character
           }
@@ -787,7 +787,11 @@
       function startPracticeObservation() {
         currentPracticeObservationCount = 0;
         practiceObservedOutcomes = [];
-        // Generate practice sequence (always green coin)
+        // Randomly determine the fixed coin color for the practice session
+        practiceCoinColor = Math.random() < 0.5 ? 'green' : 'purple';
+        console.log('Practice Coin Color (Fixed):', practiceCoinColor);
+
+        // Generate practice sequence using the determined fixed color
         practiceObservationSequence = generateTrials(MAX_OBSERVATIONS, 'coin', 'fixed'); 
         console.log('Practice Observation Sequence:', practiceObservationSequence);
 
@@ -815,7 +819,7 @@
         currentPracticeObservationCount++;
 
         const img = document.createElement('img');
-        img.src = outcome === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBoxCoin.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBoxCoin.png'; // Use PurpleBoxCoin if reality was purple
+        img.src = outcome === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBoxCoin.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBoxCoin.png';
         img.alt = `Coin in ${outcome} box`;
         img.className = 'outcome-image';
         outcomesDisplay.appendChild(img);
@@ -1245,12 +1249,12 @@
       function saveDataToCSV() {
         const header = [
           'Test Date', 'Experimenter Name', 'Participant ID', 'Participant Age', 'Participant Sex',
-          'Session', 'Session Pattern', 'Session Character', 'Observation Outcomes', 'Explanation', 'Betting Round', 'Betting Choice', 'Betting Reality', 'Coins Earned This Round', 'Total Coins Session'
+          'Session Type', 'Session Pattern', 'Session Character', 'Trial Type', 'Trial Index', 'Player Choice', 'Actual Outcome', 'Coins Earned This Trial', 'Explanation', 'Session Total Coins'
         ];
 
         const dataRows = [];
 
-        const baseInfo = [
+        const baseParticipantInfo = [
           participantInfo.test_date || '',
           participantInfo.experimenter || '',
           participantInfo.SID || '',
@@ -1258,74 +1262,78 @@
           participantInfo.sex || ''
         ];
 
-        // Function to add rows for a specific session
-        function addSessionData(sessionType) {
-          const session = sessionData[sessionType];
-          const sessionNum = sessionType === 'sessionA' ? 1 : 2;
+        // Helper function to add rows for a given session
+        function addSessionRows(sessionName, sessionDataObj, isPractice = false) {
+            const sessionPattern = isPractice ? `Fixed (${practiceCoinColor})` : sessionDataObj.pattern; // Explicitly add fixed color for practice
+            const sessionCharacter = isPractice ? 'coin' : sessionDataObj.character;
 
-          // Add a row for the observation outcomes and explanation (first row for the session)
-          dataRows.push([
-            ...baseInfo,
-            `Session ${sessionNum}`,
-            session.pattern, // Include session pattern
-            session.character, // Include session character
-            JSON.stringify(session.observationOutcomes), // Store as JSON string
-            session.explanation,
-            '', '', '', '', // Empty for betting columns
-            '' // Empty for total coins for this row
-          ]);
-
-          // Add rows for each betting round
-          for (let i = 0; i < session.bettingChoices.length; i++) {
-            const coinsEarnedThisRound = session.bettingChoices[i] === session.bettingRealities[i] ? 1 : 0;
-            dataRows.push([
-              ...baseInfo,
-              `Session ${sessionNum}`,
-              session.pattern, // Include session pattern
-              session.character, // Include session character
-              '', '', // Empty for observation/explanation
-              i + 1,
-              session.bettingChoices[i],
-              session.bettingRealities[i],
-              coinsEarnedThisRound,
-              i === session.bettingChoices.length - 1 ? session.coinsEarned : '' // Only add total coins on the last betting round row
-            ]);
-          }
-        }
-
-        addSessionData('sessionA');
-        addSessionData('sessionB');
-
-        // Add practice session data
-        if (practiceObservedOutcomes.length > 0 || practiceBettingChoices.length > 0) {
-            dataRows.push([
-                ...baseInfo,
-                `Practice`,
-                `Fixed (Green)`, // Practice pattern
-                `coin`, // Practice character
-                JSON.stringify(practiceObservedOutcomes), // Practice observations
-                '', // No explanation for practice
-                '', '', '', '', // Empty for betting columns (will fill below)
-                '' // Empty for total coins for this row
-            ]);
-
-            for (let i = 0; i < practiceBettingChoices.length; i++) {
-                const coinsEarnedThisRound = practiceBettingChoices[i] === practiceBettingRealities[i] ? 1 : 0;
+            // Add rows for observations
+            sessionDataObj.observationOutcomes.forEach((outcome, index) => {
                 dataRows.push([
-                    ...baseInfo,
-                    `Practice`,
-                    `Fixed (Green)`,
-                    `coin`,
-                    '', '', // Empty for observation/explanation
-                    i + 1,
-                    practiceBettingChoices[i],
-                    practiceBettingRealities[i],
-                    coinsEarnedThisRound,
-                    i === practiceBettingChoices.length - 1 ? practiceCoinsEarned : ''
+                    ...baseParticipantInfo,
+                    sessionName,
+                    sessionPattern,
+                    sessionCharacter,
+                    'Observation',
+                    index + 1, // Trial Index
+                    'observe', // Player Choice
+                    outcome, // Actual Outcome
+                    0, // Coins Earned This Trial
+                    '', // Explanation (empty for observation rows)
+                    '' // Session Total Coins (empty for observation rows)
+                ]);
+            });
+
+            // Add a row for the explanation (only for main sessions, not practice)
+            if (!isPractice && sessionDataObj.explanation) {
+                 dataRows.push([
+                    ...baseParticipantInfo,
+                    sessionName,
+                    sessionPattern,
+                    sessionCharacter,
+                    'Explanation', // Trial Type
+                    '', // Trial Index (empty)
+                    '', // Player Choice (empty)
+                    '', // Actual Outcome (empty)
+                    '', // Coins Earned This Trial (empty)
+                    sessionDataObj.explanation, // Explanation
+                    '' // Session Total Coins (empty)
+                ]);
+            }
+
+            // Add rows for betting
+            for (let i = 0; i < BETTING_ROUNDS; i++) {
+                const choice = sessionDataObj.bettingChoices[i] || '';
+                const reality = sessionDataObj.bettingRealities[i] || '';
+                const coinsEarnedThisTrial = (choice && reality && choice === reality) ? 1 : 0;
+                dataRows.push([
+                    ...baseParticipantInfo,
+                    sessionName,
+                    sessionPattern,
+                    sessionCharacter,
+                    'Betting', // Trial Type
+                    i + 1, // Trial Index
+                    choice, // Player Choice
+                    reality, // Actual Outcome
+                    coinsEarnedThisTrial, // Coins Earned This Trial
+                    '', // Explanation (empty for betting rows)
+                    (i === BETTING_ROUNDS - 1) ? sessionDataObj.coinsEarned : '' // Session Total Coins (only on last betting round row)
                 ]);
             }
         }
 
+        // Order of adding data: Practice -> Session A -> Session B
+        // Practice session data
+        addSessionRows('Practice', {
+            observationOutcomes: practiceObservedOutcomes,
+            bettingChoices: practiceBettingChoices,
+            bettingRealities: practiceBettingRealities,
+            coinsEarned: practiceCoinsEarned
+        }, true); // true indicates it's the practice session
+
+        // Main sessions data
+        addSessionRows(`Session 1`, sessionData[sessionOrder[0]]);
+        addSessionRows(`Session 2`, sessionData[sessionOrder[1]]);
 
         const csvContent = [header, ...dataRows].map(row => row.join(',')).join('\n');
 
