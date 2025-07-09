@@ -138,7 +138,7 @@
         box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
       }
 
-      .instruction-page, .session-summary, .final-summary {
+      .instruction-page, .session-summary, .final-summary, .practice-screen {
         text-align: center;
         margin: 20px auto;
         max-width: 600px;
@@ -312,6 +312,7 @@
         <button id="decline-button">Decline</button>
       </div>
 
+      <!-- Instruction screens (adapted for new flow) -->
       <div id="instruction1" class="instruction-page hidden">
         <div class="video-container">
           <video width="600" height="300" controls>
@@ -382,38 +383,96 @@
         </div>
       </div>
 
+      <!-- Pre-trial screen before practice -->
+      <div id="pretrial" class="hidden">
+        <p id="practice-rounds-text">Now we are going to enter the practice game. This is to practice for your real game later where you will get to win coins. So you want to learn as much as you can in the practice game to do well in the real game!</p>
+        <p id="rounds-instruction">This practice game has 10 rounds. In each round, you can decide to either watch who is behind the doors or choose one door to win coins.</p>
+        <p>You will find out how many coins you win at the end of the game.</p>
+        <p>Are you ready to play the game?</p>
+        <button id="ready-button">Ready</button>
+      </div>
+
+      <!-- New Practice Observation Screen -->
+      <div id="practice-observation-screen" class="practice-screen hidden">
+        <h2>Practice Observation!</h2>
+        <p>Click the glasses to observe where the coin is hiding. You can observe up to <span id="practice-obs-total-rounds"></span> times.</p>
+        <div id="practice-observation-outcomes-display" class="observation-outcome-grid">
+          <!-- Practice observed outcomes will be displayed here -->
+        </div>
+        <div class="observation-controls">
+          <button class="glasses-icon-button" id="practice-observe-button">
+            <img src="https://github.com/ey242/OVB/raw/main/public/stim/glasses.png" alt="Observe">
+          </button>
+          <br>
+          <button id="practice-ready-to-bet-button" class="continue-button hidden">I'm done watching and ready to bet!</button>
+        </div>
+      </div>
+
+      <!-- New Practice Betting Screen -->
+      <div id="practice-betting-screen" class="practice-screen hidden">
+        <h2>Practice Betting!</h2>
+        <p>Now, based on what you observed, bet on where the coin is hiding for <span id="practice-bet-total-rounds"></span> rounds.</p>
+        <div id="practice-betting-outcomes-display" class="observation-outcome-grid">
+          <!-- Practice observed outcomes will remain displayed here, and betting choices will be appended -->
+        </div>
+        <p>Practice Betting Round <span id="current-practice-betting-round">1</span> of <span id="practice-bet-total-rounds-display"></span></p>
+        <div class="betting-trial-container">
+          <img src="https://github.com/ey242/OVB/raw/main/public/stim/GreenBox.png" alt="Green Box" class="betting-door practice-bet-door" data-door="green">
+          <img src="https://github.com/ey242/OVB/raw/main/public/stim/PurpleBox.png" alt="Purple Box" class="betting-door practice-bet-door" data-door="purple">
+        </div>
+        <!-- No continue button here, it will be on the summary screen -->
+      </div>
+
+      <!-- New Practice Summary Screen -->
+      <div id="practice-summary-screen" class="session-summary hidden">
+        <h2 id="practice-summary-title">Practice Session Summary</h2>
+        <p id="practice-coins-earned-display"></p>
+        <div id="practice-summary-details">
+          <!-- Practice betting outcomes will be revealed here -->
+        </div>
+        <button id="practice-summary-continue-button" class="continue-button">Start Game!</button>
+      </div>
+
+      <!-- New Observation Screen -->
       <div id="observation-screen" class="instruction-page hidden">
-        <h2 id="observation-title">Observation Session 1</h2>
+        <h2 id="observation-title">Now watch where the kind elf will hide behind</h2>
         <p>Click the glasses to observe who is behind the doors. You can observe up to 32 times.</p>
         <div id="observation-outcomes-display" class="observation-outcome-grid">
-          </div>
+          <!-- Observed outcomes will be displayed here -->
+        </div>
         <div class="observation-controls">
           <button class="glasses-icon-button" id="observe-button">
             <img src="https://github.com/ey242/OVB/raw/main/public/stim/glasses.png" alt="Observe">
           </button>
           <br>
-          <button id="ready-to-bet-button" class="continue-button hidden">Ready to Bet</button>
+          <button id="ready-to-bet-button" class="continue-button hidden">I'm done watching and ready to bet!</button>
         </div>
       </div>
 
+      <!-- New Betting Screen -->
       <div id="betting-screen" class="instruction-page hidden">
-        <h2 id="betting-title">Betting Session 1</h2>
-        <p>Now, based on what you observed, bet on where the princess is hiding for 10 rounds.</p>
+        <h2 id="betting-title">Session 1 Betting</h2>
+        <p>Now, based on what you observed, bet on where the character is hiding for 10 rounds.</p>
         <div id="observation-outcomes-display-betting" class="observation-outcome-grid">
-          </div>
+          <!-- Observed outcomes will remain displayed here, and betting choices will be appended -->
+        </div>
         <p>Round <span id="current-betting-round">1</span> of 10</p>
         <div class="betting-trial-container" id="betting-doors-container">
-          </div>
+          <!-- Doors will be dynamically loaded here based on character -->
+        </div>
       </div>
 
+      <!-- Session Summary Screen -->
       <div id="session-summary-screen" class="session-summary hidden">
         <h2 id="session-summary-title">Session Summary</h2>
         <p id="session-coins-earned"></p>
         <div id="betting-summary-details">
-          </div>
+          <!-- Betting outcomes will be revealed here -->
+        </div>
         <button id="session-continue-button" class="continue-button">Continue</button>
       </div>
 
+      <!-- Final Summary Screen -->
       <div id="final-summary-screen" class="final-summary hidden">
         <h2>Experiment Complete!</h2>
         <p>Thank you for participating!</p>
@@ -422,6 +481,7 @@
       </div>
     </div>
 
+    <!-- Custom Modal for Alerts -->
     <div id="custom-alert-modal" class="custom-modal hidden">
       <div class="custom-modal-content">
         <p id="custom-alert-message"></p>
@@ -429,6 +489,7 @@
       </div>
     </div>
 
+    <!-- Custom Confirm Modal -->
     <div id="custom-confirm-modal" class="custom-modal hidden">
       <div class="custom-modal-content">
         <p id="custom-confirm-message"></p>
@@ -439,10 +500,11 @@
       </div>
     </div>
 
+    <!-- Custom Modal for Explanations -->
     <div id="explanation-modal" class="custom-modal hidden">
       <div class="custom-modal-content">
-        <h3>Explain Your Pattern</h3>
-        <p>What do you think is the trick to finding the princess? Can you tell us how you think she hides?</p>
+        <h3 id="explanation-modal-title">Explain Your Pattern</h3>
+        <p id="explanation-modal-question">What do you think is the trick to finding the princess? Can you tell us how you think she hides?</p>
         <textarea id="explanation-text" placeholder="Type your explanation here..."></textarea>
         <button id="submit-explanation-button">Submit Explanation</button>
       </div>
@@ -508,11 +570,15 @@
       /**
        * Displays the explanation modal and captures user input.
        * @param {function} callback - Callback function to execute with the explanation text when submitted.
+       * @param {string} characterName - The name of the character for the explanation question (e.g., 'elf', 'princess').
        */
-      function showExplanationModal(callback) {
+      function showExplanationModal(callback, characterName) {
           const modal = document.getElementById('explanation-modal');
           const textarea = document.getElementById('explanation-text');
           const submitButton = document.getElementById('submit-explanation-button');
+          const questionElement = document.getElementById('explanation-modal-question');
+
+          questionElement.textContent = `What do you think is the trick to finding the ${characterName}? Can you tell us how you think she hides?`;
 
           textarea.value = ''; // Clear previous text
           modal.classList.remove('hidden');
@@ -527,8 +593,9 @@
       }
 
       // --- Global Variables ---
-      const MAX_OBSERVATIONS = 32; // Upper limit for observations
+      const MAX_OBSERVATIONS = 32; // Upper limit for observations for both practice and main sessions
       const BETTING_ROUNDS = 10;
+      const PRACTICE_ROUNDS = 10; // Number of rounds for practice betting
 
       let participantInfo = {};
       let sessionData = {
@@ -560,7 +627,14 @@
       let currentBettingTrials = []; // Stores the 10 realities for betting phase
       let currentObservationSequence = []; // Stores the pre-generated sequence for alternating observation
 
-      // --- Core Logic Functions ---
+      // Practice specific variables
+      let currentPracticeObservationCount = 0;
+      let practiceObservedOutcomes = [];
+      let currentPracticeBettingRound = 0;
+      let practiceBettingChoices = [];
+      let practiceBettingRealities = [];
+      let practiceCoinsEarned = 0;
+      let practiceObservationSequence = []; // Stores the pre-generated sequence for practice observation
 
       /**
        * Shuffles an array in place.
@@ -576,7 +650,7 @@
       /**
        * Generates a sequence of trials for observation or betting.
        * @param {number} numTrials - The total number of trials to generate.
-       * @param {string} characterType - 'elf' or 'princess'.
+       * @param {string} characterType - 'elf', 'princess', or 'coin' for practice.
        * @param {string} [patternType] - Optional: 'alternating' or 'random' for trials.
        * @param {string} [startOutcome] - Optional: The outcome to start the alternating pattern with.
        * @returns {Array<string>} An array of strings representing the rewarded door for each trial.
@@ -588,9 +662,15 @@
           if (characterType === 'elf') {
               door1 = 'brown';
               door2 = 'blue';
-          } else { // characterType === 'princess'
+          } else if (characterType === 'princess') {
               door1 = 'red';
               door2 = 'yellow';
+          } else if (characterType === 'coin') { // For practice session, always green
+              for (let i = 0; i < numTrials; i++) {
+                  // Coin is always in green for practice, as per user's previous request.
+                  trials.push('green'); // Coin always hides behind green for practice
+              }
+              return trials; // Return early for coin character
           }
 
           if (patternType === 'alternating') {
@@ -640,7 +720,7 @@
        * @param {string} id - The ID of the screen to show.
        */
       function showScreen(id) {
-        document.querySelectorAll('#experiment-container > div, .custom-modal').forEach(screen => {
+        document.querySelectorAll('#experiment-container > div, .custom-modal, .practice-screen, .instruction-page, .session-summary, .final-summary').forEach(screen => {
           screen.classList.add('hidden');
         });
         document.getElementById(id).classList.remove('hidden');
@@ -702,6 +782,191 @@
       }
 
       /**
+       * Starts the practice observation session.
+       */
+      function startPracticeObservation() {
+        currentPracticeObservationCount = 0;
+        practiceObservedOutcomes = [];
+        // Generate practice sequence (always green coin)
+        practiceObservationSequence = generateTrials(MAX_OBSERVATIONS, 'coin', 'fixed'); 
+        console.log('Practice Observation Sequence:', practiceObservationSequence);
+
+        document.getElementById('practice-observation-outcomes-display').innerHTML = '';
+        document.getElementById('practice-obs-total-rounds').textContent = MAX_OBSERVATIONS;
+        document.getElementById('practice-observe-button').addEventListener('click', handlePracticeObserve);
+        document.getElementById('practice-ready-to-bet-button').classList.add('hidden'); // Hide until first observation
+        document.getElementById('practice-ready-to-bet-button').addEventListener('click', handlePracticeReadyToBet);
+        showScreen('practice-observation-screen');
+      }
+
+      /**
+       * Handles observation in the practice session.
+       */
+      function handlePracticeObserve() {
+        if (currentPracticeObservationCount >= MAX_OBSERVATIONS) {
+            showCustomAlert("You have watched the most you can watch for this practice session.");
+            return;
+        }
+
+        const outcomesDisplay = document.getElementById('practice-observation-outcomes-display');
+        const outcome = practiceObservationSequence[currentPracticeObservationCount]; // Get outcome from pre-generated sequence
+
+        practiceObservedOutcomes.push(outcome);
+        currentPracticeObservationCount++;
+
+        const img = document.createElement('img');
+        img.src = outcome === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBoxCoin.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBoxCoin.png'; // Use PurpleBoxCoin if reality was purple
+        img.alt = `Coin in ${outcome} box`;
+        img.className = 'outcome-image';
+        outcomesDisplay.appendChild(img);
+
+        // Show "I'm done watching and ready to bet!" button after at least one observation
+        if (currentPracticeObservationCount > 0) {
+            document.getElementById('practice-ready-to-bet-button').classList.remove('hidden');
+        }
+      }
+
+      /**
+       * Handles the "I'm done watching and ready to bet!" button click for the practice session.
+       */
+      function handlePracticeReadyToBet() {
+        document.getElementById('practice-observe-button').removeEventListener('click', handlePracticeObserve);
+        document.getElementById('practice-ready-to-bet-button').removeEventListener('click', handlePracticeReadyToBet);
+        startPracticeBetting();
+      }
+
+      /**
+       * Starts the practice betting session.
+       */
+      function startPracticeBetting() {
+        currentPracticeBettingRound = 0;
+        practiceBettingChoices = [];
+        practiceBettingRealities = [];
+        practiceCoinsEarned = 0;
+
+        document.getElementById('practice-bet-total-rounds').textContent = PRACTICE_ROUNDS;
+        document.getElementById('practice-bet-total-rounds-display').textContent = PRACTICE_ROUNDS;
+        document.getElementById('current-practice-betting-round').textContent = currentPracticeBettingRound + 1;
+
+        const bettingOutcomesDisplay = document.getElementById('practice-betting-outcomes-display');
+        bettingOutcomesDisplay.innerHTML = ''; // Clear it
+
+        // Display observed outcomes from practice observation phase
+        practiceObservedOutcomes.forEach(outcome => {
+            const img = document.createElement('img');
+            img.src = outcome === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBoxCoin.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBoxCoin.png';
+            img.alt = `Observed ${outcome} box`;
+            img.className = 'outcome-image';
+            bettingOutcomesDisplay.appendChild(img);
+        });
+
+        document.querySelectorAll('.practice-bet-door').forEach(door => {
+          door.classList.remove('chosen'); // Reset chosen state
+          door.addEventListener('click', handlePracticeBet);
+        });
+
+        showScreen('practice-betting-screen');
+      }
+
+      /**
+       * Handles betting in the practice session.
+       * @param {Event} event - The click event.
+       */
+      function handlePracticeBet(event) {
+        if (currentPracticeBettingRound >= PRACTICE_ROUNDS) {
+            showCustomAlert("Practice betting rounds are complete. Please click 'Start Game!'");
+            return;
+        }
+
+        const chosenDoor = event.target.dataset.door;
+        const reality = practiceObservationSequence[currentPracticeBettingRound]; // Use practiceObservationSequence for reality
+
+        practiceBettingChoices.push(chosenDoor);
+        practiceBettingRealities.push(reality);
+
+        const bettingOutcomesDisplay = document.getElementById('practice-betting-outcomes-display');
+        const chosenDoorImg = document.createElement('img');
+        chosenDoorImg.src = chosenDoor === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBox.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBox.png';
+        chosenDoorImg.alt = `Chosen ${chosenDoor} box`;
+        chosenDoorImg.className = 'outcome-image';
+        bettingOutcomesDisplay.appendChild(chosenDoorImg);
+
+        if (chosenDoor === reality) {
+            practiceCoinsEarned++;
+        }
+
+        currentPracticeBettingRound++;
+        document.getElementById('current-practice-betting-round').textContent = currentPracticeBettingRound + 1;
+
+        if (currentPracticeBettingRound >= PRACTICE_ROUNDS) {
+            endPracticeBetting();
+        }
+      }
+
+      /**
+       * Ends the practice betting session and provides a summary.
+       */
+      function endPracticeBetting() {
+        document.querySelectorAll('.practice-bet-door').forEach(door => {
+            door.removeEventListener('click', handlePracticeBet);
+        });
+        showPracticeSummary();
+      }
+
+      /**
+       * Displays the summary for the practice session.
+       */
+      function showPracticeSummary() {
+        document.getElementById('practice-coins-earned-display').textContent = `Coins earned in practice: ${practiceCoinsEarned} out of ${PRACTICE_ROUNDS}`;
+        
+        const practiceSummaryDetails = document.getElementById('practice-summary-details');
+        practiceSummaryDetails.innerHTML = '<h3>Practice Betting Outcomes:</h3>';
+
+        const allBettingOutcomesGrid = document.createElement('div');
+        allBettingOutcomesGrid.className = 'summary-grid';
+
+        for (let i = 0; i < practiceBettingChoices.length; i++) {
+          const roundContainer = document.createElement('div');
+          roundContainer.className = 'summary-round-container';
+
+          // Your Choice (Door)
+          const chosenItem = document.createElement('div');
+          chosenItem.className = 'summary-item';
+          const chosenLabel = document.createElement('p');
+          chosenLabel.textContent = `Your Choice:`; // Changed label
+          const chosenImg = document.createElement('img');
+          chosenImg.src = practiceBettingChoices[i] === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBox.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBox.png';
+          chosenImg.alt = practiceBettingChoices[i];
+          chosenImg.className = 'summary-img';
+          chosenItem.appendChild(chosenLabel);
+          chosenItem.appendChild(chosenImg);
+          roundContainer.appendChild(chosenItem);
+
+          // Reality (Coin)
+          const realityItem = document.createElement('div');
+          realityItem.className = 'summary-item';
+          const realityLabel = document.createElement('p');
+          realityLabel.textContent = `Reality:`; // Changed label
+          const realityImg = document.createElement('img');
+          realityImg.src = practiceBettingRealities[i] === 'green' ? 'https://github.com/ey242/OVB/raw/main/public/stim/GreenBoxCoin.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/PurpleBoxCoin.png';
+          realityImg.alt = practiceBettingRealities[i];
+          realityImg.className = 'summary-img';
+          realityItem.appendChild(realityLabel);
+          realityItem.appendChild(realityImg);
+          roundContainer.appendChild(realityItem);
+
+          allBettingOutcomesGrid.appendChild(roundContainer);
+        }
+        practiceSummaryDetails.appendChild(allBettingOutcomesGrid);
+
+        document.getElementById('practice-summary-continue-button').addEventListener('click', () => {
+            startObservationSession(sessionOrder[currentSessionIndex]);
+        });
+        showScreen('practice-summary-screen');
+      }
+
+
+      /**
        * Starts an observation session.
        * @param {string} sessionType - 'sessionA' or 'sessionB'.
        */
@@ -714,10 +979,13 @@
         currentObservationSequence = generateTrials(MAX_OBSERVATIONS, sessionData[currentSessionType].character, sessionData[currentSessionType].pattern);
         console.log(`Observation Sequence for ${currentSessionType} (${sessionData[currentSessionType].pattern}):`, currentObservationSequence);
 
-        document.getElementById('observation-title').textContent = `Observation Session ${currentSessionType === 'sessionA' ? 1 : 2}`;
+        // Dynamic title for observation screen
+        const characterDisplayName = sessionData[currentSessionType].character === 'elf' ? 'elf' : 'princess';
+        document.getElementById('observation-title').textContent = `Now watch where the kind ${characterDisplayName} will hide behind`; 
         document.getElementById('observation-outcomes-display').innerHTML = ''; // Clear display
         document.getElementById('observe-button').addEventListener('click', handleObserveClick);
         document.getElementById('ready-to-bet-button').classList.add('hidden'); // Hide until first observation
+        document.getElementById('ready-to-bet-button').textContent = "I'm done watching and ready to bet!"; // Set button text
         document.getElementById('ready-to-bet-button').addEventListener('click', handleReadyToBet);
 
         showScreen('observation-screen');
@@ -749,19 +1017,20 @@
         img.className = 'outcome-image';
         outcomesDisplay.appendChild(img);
 
-        // Show "Ready to Bet" button after at least one observation
+        // Show "I'm done watching and ready to bet!" button after at least one observation
         if (currentObservationCount > 0) {
           document.getElementById('ready-to-bet-button').classList.remove('hidden');
         }
       }
 
       /**
-       * Handles the "Ready to Bet" button click, transitioning to explanation.
+       * Handles the "I'm done watching and ready to bet!" button click, transitioning to explanation.
        */
       function handleReadyToBet() {
         document.getElementById('observe-button').removeEventListener('click', handleObserveClick);
         document.getElementById('ready-to-bet-button').removeEventListener('click', handleReadyToBet);
-        showExplanationModal(handleExplanationSubmitted);
+        // Pass the character name to the explanation modal
+        showExplanationModal(handleExplanationSubmitted, sessionData[currentSessionType].character);
       }
 
       /**
@@ -784,7 +1053,7 @@
         sessionData[currentSessionType].bettingRealities = [];
         sessionData[currentSessionType].coinsEarned = 0;
 
-        document.getElementById('betting-title').textContent = `Betting Session ${currentSessionType === 'sessionA' ? 1 : 2}`;
+        document.getElementById('betting-title').textContent = `Session ${currentSessionType === 'sessionA' ? 1 : 2} Betting`; // Simplified title
         document.getElementById('current-betting-round').textContent = currentBettingRound + 1;
 
         // Display observed outcomes from the current session in the shared display area
@@ -806,7 +1075,6 @@
         });
 
         // Generate the 10 realities for the betting phase based on the session's assigned pattern
-        // The character for betting trials now depends on the session's character
         let lastObservedOutcome = null;
         if (sessionData[currentSessionType].observationOutcomes.length > 0) {
             lastObservedOutcome = sessionData[currentSessionType].observationOutcomes[sessionData[currentSessionType].observationOutcomes.length - 1];
@@ -907,7 +1175,7 @@
           const chosenItem = document.createElement('div');
           chosenItem.className = 'summary-item';
           const chosenLabel = document.createElement('p');
-          chosenLabel.textContent = `R${i + 1} Choice:`;
+          chosenLabel.textContent = `Your Choice:`; // Changed label
           const chosenImg = document.createElement('img');
           if (session.character === 'elf') {
               chosenImg.src = session.bettingChoices[i] === 'brown' ? 'https://github.com/ey242/OVB/raw/main/public/stim/browndoor.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/bluedoor.png';
@@ -924,7 +1192,7 @@
           const realityItem = document.createElement('div');
           realityItem.className = 'summary-item';
           const realityLabel = document.createElement('p');
-          realityLabel.textContent = `R${i + 1} Reality:`;
+          realityLabel.textContent = `Reality:`; // Changed label
           const realityImg = document.createElement('img');
           if (session.character === 'elf') {
               realityImg.src = session.bettingRealities[i] === 'brown' ? 'https://github.com/ey242/OVB/raw/main/public/stim/elfbrown.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/elfblue.png';
@@ -1028,6 +1296,37 @@
         addSessionData('sessionA');
         addSessionData('sessionB');
 
+        // Add practice session data
+        if (practiceObservedOutcomes.length > 0 || practiceBettingChoices.length > 0) {
+            dataRows.push([
+                ...baseInfo,
+                `Practice`,
+                `Fixed (Green)`, // Practice pattern
+                `coin`, // Practice character
+                JSON.stringify(practiceObservedOutcomes), // Practice observations
+                '', // No explanation for practice
+                '', '', '', '', // Empty for betting columns (will fill below)
+                '' // Empty for total coins for this row
+            ]);
+
+            for (let i = 0; i < practiceBettingChoices.length; i++) {
+                const coinsEarnedThisRound = practiceBettingChoices[i] === practiceBettingRealities[i] ? 1 : 0;
+                dataRows.push([
+                    ...baseInfo,
+                    `Practice`,
+                    `Fixed (Green)`,
+                    `coin`,
+                    '', '', // Empty for observation/explanation
+                    i + 1,
+                    practiceBettingChoices[i],
+                    practiceBettingRealities[i],
+                    coinsEarnedThisRound,
+                    i === practiceBettingChoices.length - 1 ? practiceCoinsEarned : ''
+                ]);
+            }
+        }
+
+
         const csvContent = [header, ...dataRows].map(row => row.join(',')).join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1075,17 +1374,23 @@
             'instruction1': 'instruction2',
             'instruction2': 'instruction3',
             'instruction3': 'instruction4',
-            'instruction4': sessionOrder[currentSessionIndex] === 'sessionA' ? 'observation-screen' : 'observation-screen' // Both sessions start with observation
+            'instruction4': 'pretrial' // After instructions, go to pretrial
           }[currentScreen];
           if (nextScreen) {
             console.log(`Selected answer: ${e.target.dataset.value}`);
-            if (nextScreen === 'observation-screen') {
-                startObservationSession(sessionOrder[currentSessionIndex]);
-            } else {
-                showScreen(nextScreen);
-            }
+            showScreen(nextScreen);
           }
         });
+      });
+
+      // Start practice observation from pretrial screen
+      document.getElementById('ready-button').addEventListener('click', () => {
+        startPracticeObservation();
+      });
+
+      // Practice continue button is now on the practice summary screen
+      document.getElementById('practice-summary-continue-button').addEventListener('click', () => {
+        startObservationSession(sessionOrder[currentSessionIndex]);
       });
 
       // Initial screen display
