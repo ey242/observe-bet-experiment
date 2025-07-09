@@ -1264,7 +1264,8 @@
 
         // Helper function to add rows for a given session
         function addSessionRows(sessionName, sessionDataObj, isPractice = false) {
-            const sessionPattern = isPractice ? `Fixed (${practiceCoinColor})` : sessionDataObj.pattern; // Explicitly add fixed color for practice
+            // const sessionPattern = isPractice ? `Fixed (${practiceCoinColor})` : sessionDataObj.pattern; 
+            const sessionPattern = isPractice ? `fixed` : sessionDataObj.pattern; // Explicitly add fixed color for practice
             const sessionCharacter = isPractice ? 'coin' : sessionDataObj.character;
 
             // Add rows for observations
