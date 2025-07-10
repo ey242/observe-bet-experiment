@@ -312,93 +312,6 @@
         <button id="decline-button">Decline</button>
       </div>
 
-      <!-- Add this new div for the probability selection screen -->
-      <div id="probability-selection" class="hidden">
-        <h2>Select Probability Condition</h2>
-        <p>Please choose the probability condition for this experiment:</p>
-        <div class="button-container">
-          <button class="prob-button" data-probability="0.5">0.5</button>
-          <button class="prob-button" data-probability="0.8">0.8</button>
-          <button class="prob-button" data-probability="1.0">1.0</button>
-        </div>
-      </div>
-
-      <div id="instruction1" class="instruction-div hidden">
-        <div class="button-container">
-          <button class="number-button" data-value="0">0</button>
-          <button class="number-button" data-value="1">1</button>
-          <button class="number-button" data-value="2">2</button>
-          <button class="number-button" data-value="3">3</button>
-        </div>
-        <div class="question-text">
-          <p>What happens if you meet the kind elf?</p>
-          <p>What happens if you meet the mean monster?</p>
-        </div>
-      </div>
-      <div id="instruction2" class="instruction-div hidden">
-        <div class="button-container">
-          <button class="number-button" data-value="0">0</button>
-          <button class="number-button" data-value="1">1</button>
-          <button class="number-button" data-value="2">2</button>
-          <button class="number-button" data-value="3">3</button>
-        </div>
-        <div class="question-text">
-          <p>Will the kind elf change the door she hides behind?</p>
-          <p>Does the kind elf like to hide behind one door more than the other?</p>
-          <p>Will the mean monster change the door he hides behind?</p>
-          <p>Does the mean monster like to hide behind one door more than the other?</p>
-        </div>
-      </div>
-      <div id="instruction3" class="instruction-div hidden">
-        <div class="button-container">
-          <button class="number-button" data-value="0">0</button>
-          <button class="number-button" data-value="1">1</button>
-          <button class="number-button" data-value="2">2</button>
-          <button class="number-button" data-value="3">3</button>
-        </div>
-        <div class="question-text">
-          <p>If you choose a door, will you find out who is behind it right away? </p> 
-          <p>If you choose a door, when will you find out if you win a coin? </p> 
-        </div>
-      </div>
-      <div id="instruction4" class="instruction-div hidden">
-        <div class="button-container">
-          <button class="number-button" data-value="0">0</button>
-          <button class="number-button" data-value="1">1</button>
-          <button class="number-button" data-value="2">2</button>
-          <button class="number-button" data-value="3">3</button>
-        </div>
-        <div class="question-text">
-          <p>Do you win a coin for choosing to watch where the kind elf is behind the door?</p>
-        </div>
-      </div>
-
-      <div id="elfslider1" class="hidden">
-        <img src="https://github.com/ey242/OVB/raw/main/public/stim/elfdoors.png" alt="Elf Doors" style="width: 750px;">
-        <p>
-          <center>Can you guess which door the kind elf prefers to hide behind? If the elf only hides behind the brown door and never the blue door, we will drag it all the way to where the brown door is. If the elf only hides behind the blue door and never the brown door, we will drag it all the way to the other end where the blue door is. If the elf hides behind both doors sometimes, then we’ll move the slider somewhere in the middle! Now, I'm going to drag the slider from the brown door to the blue door. You tell me when to stop! If you think the elf likes the brown door more, say stop when we're closer to the brown side. If you think the elf likes the blue door more, say stop when we're closer to the blue side. Ready? Let’s start!</center>
-        </p>
-        <div class="slider-container" style="width: 94%;">          
-          <input type="range" min="0" max="100" value="50" class="slider" id="elfSlider">
-        </div>
-        <button class="next-button" data-next="wolfslider1">Next</button>
-      </div>
-
-
-      <div id="wolfslider1" class="hidden">
-        <img src="https://github.com/ey242/OVB/raw/main/public/stim/wolfdoors.png" alt="Wolf Doors" style="width: 750px;">
-        <p>
-          <center>Can you guess which door the mean monster prefers to hide behind? If the monster only hides behind the brown door and never the blue door, we will drag it all the way to where the brown door is. If the monster only hides behind the blue door and never the brown door, we will drag it all the way to the other end where the blue door is. If the monster hides behind both doors sometimes, then we’ll move the slider somewhere in the middle! Now, I'm going to drag the slider from the brown door to the blue door. You tell me when to stop! If you think the monster likes the brown door more, say stop when we're closer to the brown side. If you think the monster likes the blue door more, say stop when we're closer to the blue side. Ready? Let’s start!</center>
-        </p>
-        <div class="slider-container" style="width: 94%;">
-                    <input type="range" min="0" max="100" value="50" class="slider" id="wolfSlider">
-        </div>
-        <button class="next-button" data-next="pretrial">Next</button>
-      </div>
-
-
-
-
       <div id="pretrial" class="hidden">
         <img src="https://github.com/ey242/OVB/raw/main/public/stim/coin_boxes.png" alt="Coin Boxes" style="width: 750px;">
         <p>Look at these two special boxes! Inside one of them, there's a shiny coin. Your job is to try and figure out which box the coin is in so you can win it!</p>
@@ -409,7 +322,7 @@
       <!-- New Practice Observation Screen -->
       <div id="practice-observation-screen" class="practice-screen hidden">
         <h2>Practice Session</h2> <!-- Changed headline -->
-        <p>First, you'll get to watch to see which box the coin is hidden. When you click on the glasses, you'll see exactly which box the coin appeared! You won't get a coin just for watching, but it helps you learn its hiding spot! You can watch as many times as you like.</p>
+        <p>First, you'll get to watch which box the coin is in. When you click on the glasses, you'll see exactly which box the coin appeared! You won't get a coin just for watching, but it helps you learn its hiding spot! You can watch as many times as you like.</p>
         <p>After you're done watching, you'll guess which box the coin is in. When you click on one of the boxes, you're making your best guess to win the coin! Once you start guessing, you can't go back to watching. You won't see if you found the coin right away when you guess. Instead, at the very end of this practice game, we'll tell you how many coins you found!</p>
         <div id="practice-observation-outcomes-display" class="observation-outcome-grid">
           <!-- Practice observed outcomes will be displayed here -->
@@ -443,39 +356,26 @@
         <h2 id="practice-summary-title">Practice Summary</h2> <!-- Changed headline -->
         <p id="practice-coins-earned-display"></p>
         <div id="practice-summary-details">
-          <!-- Practice betting outcomes will be revealed here -->
+          <h3>Betting Outcomes:</h3> <!-- Re-added headline -->
         </div>
         <button id="practice-summary-continue-button" class="continue-button">Start Game!</button>
       </div>
 
-      <!-- New Instruction Page: Before Session 1 (Elf) -->
-      <div id="instruction-session1" class="instruction-page hidden">
-        <img src="https://github.com/ey242/OVB/raw/main/public/stim/elf_doors.png" alt="Elf Doors" style="width: 750px;">
-        <p>Now, get ready for a new part of the game! This time we have a kind elf! Look at these two magical doors. The kind elf will hide behind one of them each time.</p>
-        <p>The kind elf has its own special pattern for where it hides. It will give you a coin every time you guess the right door it hides behind.</p>
-        <p>Your job is to win as many coins as you can! To do this, you'll first get to watch and see which door the elf is behind to learn how it hides.</p>
-        <p>When you're done watching, you'll guess which door you think the elf is behind to try and win a coin! Once you start guessing, you can't go back to watching.</p>
-        <p>You'll find out how many coins you get from the elf at the end.</p>
-        <p>Are you ready to meet the kind elf and win lots of coins?</p>
-        <button id="start-session1-button" class="continue-button">Ready</button>
-      </div>
-
-      <!-- New Instruction Page: Before Session 2 (Princess) -->
-      <div id="instruction-session2" class="instruction-page hidden">
-        <img src="https://github.com/ey242/OVB/raw/main/public/stim/princess_doors.png" alt="Princess Doors" style="width: 750px;">
-        <p>Now, get ready for a new part of the game! This time we have a kind princess!  Look at these two magical doors. The kind princess will hide behind one of them each time.</p>
-        <p>The kind princess has her very own special pattern for where she hides. She will give you a coin every time you guess the right door she hides behind.</p>
-        <p>Your job is to win as many coins as possible! To do this, you'll first get to watch and see which door the princess is behind to learn how she hides.</p>
-        <p>When you're done watching, you'll guess which door you think the princess is behind to try and win a coin! Once you start guessing, you can't go back to watching.</p>
-        <p>You'll find out how many coins you get from the princess at the end.</p>
-        <p>Are you ready to meet the kind princess and win lots of coins?</p>
-        <button id="start-session2-button" class="continue-button">Ready</button>
+      <!-- Dynamic Instruction Page for Sessions 1 & 2 -->
+      <div id="session-instruction-page" class="instruction-page hidden">
+        <img id="session-instruction-image" src="" alt="" style="width: 750px;">
+        <p id="session-instruction-text-1"></p>
+        <p id="session-instruction-text-2"></p>
+        <p id="session-instruction-text-3"></p>
+        <p id="session-instruction-text-4"></p>
+        <p id="session-instruction-text-5"></p>
+        <button id="start-session-button" class="continue-button">Ready</button>
       </div>
 
       <!-- New Observation Screen -->
       <div id="observation-screen" class="instruction-page hidden">
-        <h2 id="observation-title">Now watch where the kind elf will hide behind</h2>
-        <p id="observation-instruction-text">Click the glasses to watch which door the elf is hiding behind.</p> 
+        <h2 id="observation-title"></h2> <!-- Dynamic title -->
+        <p id="observation-instruction-text"></p> <!-- Dynamic instruction -->
         <div id="observation-outcomes-display" class="observation-outcome-grid">
           <!-- Observed outcomes will be displayed here -->
         </div>
@@ -490,7 +390,7 @@
 
       <!-- New Betting Screen -->
       <div id="betting-screen" class="instruction-page hidden">
-        <h2 id="betting-title">Session 1 Betting</h2>
+        <h2 id="betting-title">Session Betting</h2> <!-- Simplified title -->
         <p>Now, based on what you watched, guess on where the character is hiding for 10 rounds.</p>
         <div id="observation-outcomes-display-betting" class="observation-outcome-grid">
           <!-- Observed outcomes will remain displayed here, and betting choices will be appended -->
@@ -506,6 +406,7 @@
         <h2 id="session-summary-title">Summary</h2> 
         <p id="session-coins-earned"></p>
         <div id="betting-summary-details">
+          <h3>Betting Outcomes:</h3> <!-- Re-added headline -->
         </div>
         <button id="session-continue-button" class="continue-button">Continue</button>
       </div>
@@ -959,7 +860,7 @@
         document.getElementById('practice-coins-earned-display').textContent = `Coins earned: ${practiceCoinsEarned} out of ${PRACTICE_ROUNDS}`; 
         
         const practiceSummaryDetails = document.getElementById('practice-summary-details');
-        practiceSummaryDetails.innerHTML = '<h3>Betting Outcomes:</h3>'; // Re-add headline
+        practiceSummaryDetails.innerHTML = '<h3>Betting Outcomes:</h3>'; // Re-added headline
 
         const allBettingOutcomesGrid = document.createElement('div');
         allBettingOutcomesGrid.className = 'summary-grid';
@@ -999,10 +900,59 @@
         practiceSummaryDetails.appendChild(allBettingOutcomesGrid);
         
         document.getElementById('practice-summary-continue-button').addEventListener('click', () => {
-            // After practice summary, go to instruction-session1
-            showScreen('instruction-session1');
+            // After practice summary, go to the dynamic session instruction page
+            showSessionInstruction(sessionOrder[currentSessionIndex]);
         });
         showScreen('practice-summary-screen');
+      }
+
+      /**
+       * Dynamically sets content for the session instruction page.
+       * @param {string} sessionType - 'sessionA' or 'sessionB'.
+       */
+      function showSessionInstruction(sessionType) {
+          const session = sessionData[sessionType];
+          const character = session.character; // 'elf' or 'princess'
+          const imageElement = document.getElementById('session-instruction-image');
+          const text1 = document.getElementById('session-instruction-text-1');
+          const text2 = document.getElementById('session-instruction-text-2');
+          const text3 = document.getElementById('session-instruction-text-3');
+          const text4 = document.getElementById('session-instruction-text-4');
+          const text5 = document.getElementById('session-instruction-text-5');
+          const startButton = document.getElementById('start-session-button');
+
+          let characterDisplayName = character;
+          let characterImageSrc = '';
+
+          if (character === 'elf') {
+              characterDisplayName = 'kind elf';
+              characterImageSrc = 'https://github.com/ey242/OVB/raw/main/public/stim/elf_doors.png';
+          } else if (character === 'princess') {
+              characterDisplayName = 'kind princess';
+              characterImageSrc = 'https://github.com/ey242/OVB/raw/main/public/stim/princess_doors.png';
+          }
+
+          imageElement.src = characterImageSrc;
+          imageElement.alt = `${characterDisplayName} Doors`;
+
+          text1.textContent = `Now we have a ${characterDisplayName}! Look at these two doors. The ${characterDisplayName} will hide behind one of them each time.`;
+          text2.textContent = `The ${characterDisplayName} has ${character === 'elf' ? 'its' : 'her'} very own special pattern for where ${character === 'elf' ? 'it' : 'she'} hides. ${character === 'elf' ? 'It' : 'She'} will give you a coin every time you guess the right door ${character === 'elf' ? 'it' : 'she'} hides behind.`;
+          text3.textContent = `Your job is to win as many coins as you can! To do this, you'll first get to watch and see which door the ${characterDisplayName} is behind to learn how ${character === 'elf' ? 'it' : 'she'} hides.`;
+          text4.textContent = `When you're done watching, you'll guess which door you think the ${characterDisplayName} is behind to try and win a coin! Once you start guessing, you can't go back to watching.`;
+          text5.textContent = `You'll find out how many coins you get from the ${characterDisplayName} at the end. Are you ready to meet the ${characterDisplayName} and win lots of coins?`;
+          
+          // Remove previous event listener to prevent multiple bindings
+          startButton.removeEventListener('click', handleStartSessionButtonClick);
+          startButton.addEventListener('click', handleStartSessionButtonClick);
+
+          showScreen('session-instruction-page');
+      }
+
+      /**
+       * Handles the click of the "Ready" button on the dynamic session instruction page.
+       */
+      function handleStartSessionButtonClick() {
+          startObservationSession(sessionOrder[currentSessionIndex]);
       }
 
 
@@ -1021,10 +971,10 @@
 
         // Dynamic title for observation screen
         const characterDisplayName = sessionData[currentSessionType].character === 'elf' ? 'elf' : 'princess';
-        document.getElementById('observation-title').textContent = `Now watch where the kind ${characterDisplayName} will hide behind`; 
+        document.getElementById('observation-title').textContent = `Now watch where the ${characterDisplayName} will hide behind`; 
         
         // Update instruction text
-        document.getElementById('observation-instruction-text').textContent = `Click the glasses to watch which door the ${characterDisplayName} is hiding behind. You can watch as many times as you like.`; // Removed explicit 32 times
+        document.getElementById('observation-instruction-text').textContent = `Click the glasses to watch which door the ${characterDisplayName} is hiding behind.`; 
 
         document.getElementById('observation-outcomes-display').innerHTML = ''; // Clear display
         document.getElementById('observe-button').addEventListener('click', handleObserveClick);
@@ -1200,8 +1150,8 @@
        * Displays the summary for the current session.
        */
       function showSessionSummary() {
-        document.getElementById('session-summary-title').textContent = `Summary`; // Changed headline
-        document.getElementById('session-coins-earned').textContent = `Coins earned: ${sessionData[currentSessionType].coinsEarned} out of ${BETTING_ROUNDS}`; // Removed "in this session"
+        document.getElementById('session-summary-title').textContent = `Summary`; 
+        document.getElementById('session-coins-earned').textContent = `Coins earned: ${sessionData[currentSessionType].coinsEarned} out of ${BETTING_ROUNDS}`; 
         
         const bettingSummaryDetails = document.getElementById('betting-summary-details');
         bettingSummaryDetails.innerHTML = '<h3>Betting Outcomes:</h3>'; // Re-add headline
@@ -1266,11 +1216,7 @@
         currentSessionIndex++;
         if (currentSessionIndex < sessionOrder.length) {
           // Start the next session's instructions
-          if (sessionOrder[currentSessionIndex] === 'sessionA') {
-              showScreen('instruction-session1');
-          } else {
-              showScreen('instruction-session2');
-          }
+          showSessionInstruction(sessionOrder[currentSessionIndex]);
         } else {
           // All sessions complete, show final summary
           showFinalSummary();
@@ -1404,10 +1350,8 @@
         const formData = new FormData(e.target);
         participantInfo = Object.fromEntries(formData);
         console.log('Participant Info:', participantInfo);
-        // showScreen('consent-screen'); // Removed initial consent screen
-        // Directly initialize experiment after participant info for new flow
-        initializeExperiment();
-        // Start directly at pretrial
+        addQuitButton(); // Add quit button after participant info is submitted
+        initializeExperiment(); // Start the experiment flow
       });
 
       document.getElementById('consent-button').addEventListener('click', () => {
@@ -1417,11 +1361,12 @@
 
       document.getElementById('decline-button').addEventListener('click', () => {
         showCustomAlert('You have declined to participate. The experiment will now close.', () => {
-          window.close(); // Or redirect, based on desired behavior
+          window.close(); 
         });
       });
 
-      // Instruction screen navigation (for initial videos, now removed)
+      // Instruction screen navigation (initial videos, now removed)
+      // These are no longer part of the main flow, but kept for completeness if needed elsewhere.
       document.querySelectorAll('.number-button').forEach(button => {
         button.addEventListener('click', (e) => {
           const currentScreen = e.target.closest('div[id^="instruction"]').id;
@@ -1429,7 +1374,7 @@
             'instruction1': 'instruction2',
             'instruction2': 'instruction3',
             'instruction3': 'instruction4',
-            'instruction4': 'pretrial' // After instructions, go to pretrial
+            'instruction4': 'pretrial' 
           }[currentScreen];
           if (nextScreen) {
             console.log(`Selected answer: ${e.target.dataset.value}`);
@@ -1441,16 +1386,6 @@
       // Start practice observation from pretrial screen
       document.getElementById('ready-button').addEventListener('click', () => {
         startPracticeObservation();
-      });
-
-      // Event listener for "Continue" button on instruction-session1
-      document.getElementById('start-session1-button').addEventListener('click', () => {
-          startObservationSession(sessionOrder[currentSessionIndex]);
-      });
-
-      // Event listener for "Continue" button on instruction-session2
-      document.getElementById('start-session2-button').addEventListener('click', () => {
-          startObservationSession(sessionOrder[currentSessionIndex]);
       });
 
       // Initial screen display - changed to start at participant info
