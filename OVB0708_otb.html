@@ -15,7 +15,7 @@
       }
 
       .hidden {
-        display: none !important; /* Added !important to ensure hiding */
+        display: none !important; 
       }
 
       button {
@@ -129,7 +129,7 @@
       }
 
       .betting-door.chosen {
-        border-color: #28a745; /* Green border for chosen door */
+        border-color: #28a745; 
         box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
       }
 
@@ -150,7 +150,7 @@
         gap: 10px;
         justify-content: center;
         align-items: start;
-        max-width: 700px; /* Increased width to accommodate more items horizontally */
+        max-width: 700px; 
         margin: 0 auto;
         margin-top: 20px;
         border: 1px solid #eee;
@@ -171,7 +171,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 100%; /* Take full width of its parent (.summary-round-container) */
+        width: 100%; 
       }
 
       .summary-img {
@@ -321,11 +321,10 @@
 
       <!-- New Practice Observation Screen -->
       <div id="practice-observation-screen" class="practice-screen hidden">
-        <h2>Practice Session</h2> <!-- Changed headline -->
+        <h2>Practice Session</h2> 
         <p>First, you'll get to watch which box the coin is in. When you click on the glasses, you'll see exactly which box the coin appeared! You won't get a coin just for watching, but it helps you learn its hiding spot! You can watch as many times as you like.</p>
         <p>After you're done watching, you'll guess which box the coin is in. When you click on one of the boxes, you're making your best guess to win the coin! Once you start guessing, you can't go back to watching. You won't see if you found the coin right away when you guess. Instead, at the very end of this practice game, we'll tell you how many coins you found!</p>
         <div id="practice-observation-outcomes-display" class="observation-outcome-grid">
-          <!-- Practice observed outcomes will be displayed here -->
         </div>
         <div class="observation-controls">
           <button class="glasses-icon-button" id="practice-observe-button">
@@ -341,14 +340,12 @@
         <h2>Practice Betting</h2> <!-- Changed headline -->
         <p>Now, based on what you watched, guess on where the coin is hiding for <span id="practice-bet-total-rounds"></span> rounds.</p>
         <div id="practice-betting-outcomes-display" class="observation-outcome-grid">
-          <!-- Practice observed outcomes will remain displayed here, and betting choices will be appended -->
         </div>
         <p>Practice Betting Round <span id="current-practice-betting-round">1</span> of <span id="practice-bet-total-rounds-display"></span></p>
         <div class="betting-trial-container">
           <img src="https://github.com/ey242/OVB/raw/main/public/stim/GreenBox.png" alt="Green Box" class="betting-door practice-bet-door" data-door="green">
           <img src="https://github.com/ey242/OVB/raw/main/public/stim/PurpleBox.png" alt="Purple Box" class="betting-door practice-bet-door" data-door="purple">
         </div>
-        <!-- No continue button here, it will be on the summary screen -->
       </div>
 
       <!-- New Practice Summary Screen -->
@@ -900,7 +897,6 @@
         practiceSummaryDetails.appendChild(allBettingOutcomesGrid);
         
         document.getElementById('practice-summary-continue-button').addEventListener('click', () => {
-            // After practice summary, go to the dynamic session instruction page
             showSessionInstruction(sessionOrder[currentSessionIndex]);
         });
         showScreen('practice-summary-screen');
@@ -1383,12 +1379,10 @@
         });
       });
 
-      // Start practice observation from pretrial screen
       document.getElementById('ready-button').addEventListener('click', () => {
         startPracticeObservation();
       });
 
-      // Initial screen display - changed to start at participant info
       showScreen('participant-info');
     </script>
   </body>
