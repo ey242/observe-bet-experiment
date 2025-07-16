@@ -136,7 +136,7 @@
       .instruction-page, .session-summary, .final-summary, .practice-screen {
         text-align: center;
         margin: 20px auto;
-        max-width: 600px;
+        max-width: 750px;
       }
 
       /* Smaller font for instruction paragraphs */
@@ -314,31 +314,36 @@
 
       <div id="pretrial" class="hidden">
         <img src="https://github.com/ey242/OVB/raw/main/public/stim/coin_boxes.png" alt="Coin Boxes" style="width: 750px;">
-        <p>Look at these two special boxes! Inside one of them, there's a shiny coin. Your job is to try and figure out which box the coin is in so you can win it!</p>
+        <p>Look at these two boxes! A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
         <p>Are you ready to play the game?</p>
         <button id="ready-button">Continue</button> <!-- Changed to Continue -->
       </div>
 
       <!-- New Practice Observation Screen -->
-      <div id="practice-observation-screen" class="practice-screen hidden">
-        <h2>Practice Session</h2> 
-        <p>First, you'll get to watch which box the coin is in. When you click on the glasses, you'll see exactly which box the coin appeared! You won't get a coin just for watching, but it helps you learn its hiding spot! You can watch as many times as you like.</p>
-        <p>After you're done watching, you'll guess which box the coin is in. When you click on one of the boxes, you're making your best guess to win the coin! Once you start guessing, you can't go back to watching. You won't see if you found the coin right away when you guess. Instead, at the very end of this practice game, we'll tell you how many coins you found!</p>
-        <div id="practice-observation-outcomes-display" class="observation-outcome-grid">
-        </div>
-        <div class="observation-controls">
-          <button class="glasses-icon-button" id="practice-observe-button">
-            <img src="https://github.com/ey242/OVB/raw/main/public/stim/glasses.png" alt="Observe">
-          </button>
-          <br>
-          <button id="practice-ready-to-bet-button" class="continue-button hidden">I'm done watching and ready to guess!</button> <!-- Changed button text -->
-        </div>
-      </div>
+     <div id="practice-observation-screen" class="practice-screen hidden">
+      <h2>Practice Game</h2>
+      <h3>How to Play</h3>
+      <p>A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
+      <ol class="how-to-play-list">
+        <li><strong>Peek to Learn</strong>: Click on the <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon"> button to peek and see which box hides the coin. You can peek as many times as you like. (In this practice game, the coin stays in the same box every time.)</li>
+        <li><strong>Make Your Guess</strong>: When you think you know where the coin is, click on that box to guess. Once you start guessing, you can’t peek again.</li>
+        <li><strong>See Your Score</strong>: At the end of this practice, we’ll tell you how many coins you found.</li>
+      </ol>
+      <p>Are you ready? Click the glasses to start peeking!</p>
+      <div id="practice-observation-outcomes-display" class="observation-outcome-grid"></div>
+      <div class="observation-controls">
+        <button class="glasses-icon-button" id="practice-observe-button">
+          <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Observe">
+        </button>
+        <br>
+        <button id="practice-ready-to-bet-button" class="continue-button hidden">I’m done watching and ready to guess!</button>
+    </div>
+  </div>
 
       <!-- New Practice Betting Screen -->
       <div id="practice-betting-screen" class="practice-screen hidden">
         <h2>Practice Betting</h2> <!-- Changed headline -->
-        <p>Now, based on what you watched, guess on where the coin is hiding for <span id="practice-bet-total-rounds"></span> rounds.</p>
+        <p>Now, based on what you watched, guess on where the coin is hiding for <span id="practice-bet-total-rounds"></span> rounds. You won’t find out which box the coin is in until you’ve finished guessing!</p>
         <div id="practice-betting-outcomes-display" class="observation-outcome-grid">
         </div>
         <p>Practice Betting Round <span id="current-practice-betting-round">1</span> of <span id="practice-bet-total-rounds-display"></span></p>
@@ -378,7 +383,7 @@
         </div>
         <div class="observation-controls">
           <button class="glasses-icon-button" id="observe-button">
-            <img src="https://github.com/ey242/OVB/raw/main/public/stim/glasses.png" alt="Observe">
+            <img src="https://github.com/ey242/OVB/raw/main/public/stim/Glasses1.png" alt="Observe">
           </button>
           <br>
           <button id="ready-to-bet-button" class="continue-button hidden">I'm done watching and ready to guess!</button> 
@@ -438,7 +443,7 @@
     <!-- Custom Modal for Explanations -->
     <div id="explanation-modal" class="custom-modal hidden">
       <div class="custom-modal-content">
-        <p id="explanation-modal-question">What do you think is the trick to finding the princess? Can you tell us how you think she hides?</p>
+        <p id="explanation-modal-question">What do you think is the pattern to finding the princess? Can you tell us how you think she hides?</p>
         <textarea id="explanation-text" placeholder="Type your explanation here..."></textarea>
         <button id="submit-explanation-button">Submit Explanation</button>
       </div>
@@ -512,7 +517,7 @@
           const submitButton = document.getElementById('submit-explanation-button');
           const questionElement = document.getElementById('explanation-modal-question');
 
-          questionElement.textContent = `What do you think is the trick to finding the ${characterName}? Can you tell us how you think she hides?`;
+          questionElement.textContent = `What do you think is the pattern to finding the ${characterName}? Can you tell us how you think she hides?`;
 
           textarea.value = ''; // Clear previous text
           modal.classList.remove('hidden');
@@ -932,10 +937,10 @@
           imageElement.alt = `${characterDisplayName} Doors`;
 
           text1.textContent = `Now we have a ${characterDisplayName}! Look at these two doors. The ${characterDisplayName} will hide behind one of them each time.`;
-          text2.textContent = `The ${characterDisplayName} has ${character === 'elf' ? 'its' : 'her'} very own special pattern for where ${character === 'elf' ? 'it' : 'she'} hides. ${character === 'elf' ? 'It' : 'She'} will give you a coin every time you guess the right door ${character === 'elf' ? 'it' : 'she'} hides behind.`;
-          text3.textContent = `Your job is to win as many coins as you can! To do this, you'll first get to watch and see which door the ${characterDisplayName} is behind to learn how ${character === 'elf' ? 'it' : 'she'} hides.`;
+          text2.textContent = `Unlike the coin in the practice game, the ${characterDisplayName} has ${character === 'elf' ? 'its' : 'her'} very own special pattern for hiding so the hiding door can change. ${character === 'elf' ? 'It' : 'She'} will give you a coin every time you guess the right door ${character === 'elf' ? 'it' : 'she'} hides behind.`;
+          text3.textContent = `Your job is to win as many coins as you can! To do this, you'll first get to watch and see which door the ${characterDisplayName} is behind and learn how ${character === 'elf' ? 'it' : 'she'} hides.`;
           text4.textContent = `When you're done watching, you'll guess which door you think the ${characterDisplayName} is behind to try and win a coin! Once you start guessing, you can't go back to watching.`;
-          text5.textContent = `You'll find out how many coins you get from the ${characterDisplayName} at the end. Are you ready to meet the ${characterDisplayName} and win lots of coins?`;
+          text5.textContent = `You won't find out which door actually hid the ${characterDisplayName} until you finish all your guesses, and then we'll tell you how many coins you won. Are you ready to meet the ${characterDisplayName} and win lots of coins?`;
           
           // Remove previous event listener to prevent multiple bindings
           startButton.removeEventListener('click', handleStartSessionButtonClick);
