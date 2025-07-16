@@ -55,6 +55,12 @@
         font-size: 16px;
       }
 
+      .how-to-play-list img {
+          width: 30px; /* Adjust this value as needed */
+          height: auto;
+          vertical-align: middle; /* Aligns the image with the text */
+      }
+
       .game-container {
         display: grid;
         gap: 15px; /* Gap between outcome images */
@@ -136,7 +142,7 @@
       .instruction-page, .session-summary, .final-summary, .practice-screen {
         text-align: center;
         margin: 20px auto;
-        max-width: 750px;
+        max-width: 800px;
       }
 
       /* Smaller font for instruction paragraphs */
@@ -325,7 +331,7 @@
       <h3>How to Play</h3>
       <p>A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
       <ol class="how-to-play-list">
-        <li><strong>Peek to Learn</strong>: Click on the <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon"> button to peek and see which box hides the coin. You can peek as many times as you like. (In this practice game, the coin stays in the same box every time.)</li>
+        <li><strong>Peek to Learn</strong>: Click on the <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon"> button below to peek and see which box hides the coin. You can peek as many times as you like. (In this practice game, the coin stays in the same box every time.)</li>
         <li><strong>Make Your Guess</strong>: When you think you know where the coin is, click on that box to guess. Once you start guessing, you can’t peek again.</li>
         <li><strong>See Your Score</strong>: At the end of this practice, we’ll tell you how many coins you found.</li>
       </ol>
@@ -365,7 +371,7 @@
 
       <!-- Dynamic Instruction Page for Sessions 1 & 2 -->
       <div id="session-instruction-page" class="instruction-page hidden">
-        <img id="session-instruction-image" src="" alt="" style="width: 750px;">
+        <img id="session-instruction-image" src="" alt="" style="width: 800px;">
         <p id="session-instruction-text-1"></p>
         <p id="session-instruction-text-2"></p>
         <p id="session-instruction-text-3"></p>
@@ -673,9 +679,11 @@
         quitButton.textContent = 'Quit';
         quitButton.id = 'quit-button';
         quitButton.style.position = 'fixed';
-        quitButton.style.top = '10px';
+        quitButton.style.bottom = '10px'; // Changed to bottom
         quitButton.style.right = '10px';
         quitButton.style.zIndex = '1000';
+        quitButton.style.backgroundColor = '#808080'; // Grey background
+        quitButton.style.color = '#FFFFFF'; // White text
         quitButton.addEventListener('click', handleQuit);
         document.body.appendChild(quitButton);
       }
@@ -684,7 +692,7 @@
        * Handles the quit button click, confirming with the user and saving data.
        */
       function handleQuit() {
-        showCustomConfirm('Are you sure you want to quit? Your progress will be saved.', () => {
+        showCustomConfirm('Are you sure you want to quit? Your progress will be saved but you will not be compensated.', () => {
           saveDataToCSV(); // Save all collected data
           showCustomAlert('Thank you for participating. Your data has been saved.', () => {
             window.location.reload(); // Reload the page
