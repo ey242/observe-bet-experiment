@@ -654,7 +654,7 @@
       }
 
       // --- Global Variables ---
-      const MAX_OBSERVATIONS = 32; // Upper limit for observations for both practice and main sessions
+      const MAX_OBSERVATIONS = 60; // Upper limit for observations for both practice and main sessions
       const BETTING_ROUNDS = 10;
       const PRACTICE_ROUNDS = 10; // Number of rounds for practice betting
 
@@ -1072,7 +1072,7 @@
           text2.textContent = `Unlike the coin in the practice game, the ${characterDisplayName} has ${character === 'elf' ? 'its' : 'her'} very own special pattern for hiding so the hiding door can change. ${character === 'elf' ? 'It' : 'She'} will give you a coin every time you guess the right door ${character === 'elf' ? 'it' : 'she'} hides behind.`;
           text3.textContent = `Your job is to win as many coins as you can! To do this, you'll first get to watch and see which door the ${characterDisplayName} is behind and learn how ${character === 'elf' ? 'it' : 'she'} hides.`;
           text4.textContent = `When you're done watching, you'll guess which door you think the ${characterDisplayName} is behind to try and win a coin! Once you start guessing, you can't go back to watching.`;
-          text5.textContent = `You won't find out which door actually hid the ${characterDisplayName} until you finish all your guesses, and then we'll tell you how many coins you won. Each coin you win = $0.01 bonus payment. Are you ready to meet the ${characterDisplayName} and win lots of coins?`;
+          text5.textContent = `You won't find out which door actually hid the ${characterDisplayName} until you finish all your guesses, and then we'll tell you how many coins you won. Each coin you win = $0.01 bonus payment. Are you ready to meet the ${characterDisplayName} and win coins?`;
           
           // Remove previous event listener to prevent multiple bindings
           startButton.removeEventListener('click', handleStartSessionButtonClick);
