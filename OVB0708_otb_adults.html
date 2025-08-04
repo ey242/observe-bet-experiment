@@ -1136,8 +1136,15 @@
         document.getElementById('observe-button').addEventListener('click', handleObserveClick);
         document.getElementById('ready-to-bet-button').classList.add('hidden'); // Hide until first observation
         document.getElementById('ready-to-bet-button').textContent = "I'm done watching and ready to guess!"; // Set button text
-        document.getElementById('ready-to-bet-button').addEventListener('click', handleReadyToBet);
-
+        // document.getElementById('ready-to-bet-button').addEventListener('click', handleReadyToBet);
+        const readyBtn = document.getElementById('ready-to-bet-button');
+        readyBtn.addEventListener('click', (e) => {
+        e.preventDefault();  // stop any default behavior
+        const msg = "Are you sure you’ve watched enough outcomes to bet wisely?";
+        if (confirm(msg)) {
+          startBettingSession(currentSessionType);
+        }
+      });
         showScreen('observation-screen');
       }
 
@@ -1270,8 +1277,8 @@
           door.addEventListener('click', handleBettingClick);
         });
 
-        showScreen('betting-screen');
-      }
+        showScreen('betting-screen');  // remove the stray "s" here
+    }
 
       /**
        * Handles a door click during the betting phase.
