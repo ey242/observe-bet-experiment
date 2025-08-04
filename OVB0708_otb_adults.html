@@ -450,7 +450,7 @@
         <li><strong>Make Your Guess</strong>: When you think you know where the coin is, click on that box to guess. Once you start guessing, you can’t peek again.</li>
         <li><strong>See Your Score</strong>: At the end of this practice, we’ll tell you how many coins you found.</li>
       </ol>
-      <p>Are you ready? Click the glasses to start peeking!</p>
+      <p>Are you ready? Click the glasses to start peeking! <br>Remember, you can click it as much as you want!</p>
       <div id="practice-observation-outcomes-display" class="observation-outcome-grid"></div>
       <div class="observation-controls">
         <button class="glasses-icon-button" id="practice-observe-button">
@@ -664,24 +664,30 @@
           pattern: '', // 'alternating' or 'random'
           character: '', // 'elf' or 'princess'
           observationOutcomes: [],
+          observationRTs: [],        // ← track each observe click
           explanation: '',
           bettingChoices: [],
           bettingRealities: [],
+          bettingRTs: [],            // ← track each bet click
           coinsEarned: 0
         },
         sessionB: {
           pattern: '', // 'alternating' or 'random'
           character: '', // 'elf' or 'princess'
           observationOutcomes: [],
+          observationRTs: [],        // ← track each observe click
           explanation: '',
           bettingChoices: [],
           bettingRealities: [],
+          bettingRTs: [],            // ← track each bet click
           coinsEarned: 0
         }
       };
       let currentSessionType = ''; // 'sessionA' or 'sessionB'
       let sessionOrder = []; // Will be randomized ['sessionA', 'sessionB']
       let currentSessionIndex = 0;
+      let currentObservationStartTime = 0;
+      let currentBettingStartTime     = 0;
 
       let currentObservationCount = 0;
       let currentBettingRound = 0;
@@ -691,9 +697,13 @@
       // Practice specific variables
       let currentPracticeObservationCount = 0;
       let practiceObservedOutcomes = [];
+      let practiceObservationRTs = [];
+      let practiceObservationStartTime = 0;
       let currentPracticeBettingRound = 0;
       let practiceBettingChoices = [];
       let practiceBettingRealities = [];
+      let practiceBettingRTs = [];
+      let practiceBettingStartTime     = 0;
       let practiceCoinsEarned = 0;
       let practiceObservationSequence = []; // Stores the pre-generated sequence for practice observation
       let practiceCoinColor = ''; // 'green' or 'purple' - determined randomly at start of practice
@@ -871,6 +881,8 @@
         document.getElementById('practice-ready-to-bet-button').classList.add('hidden'); // Hide until first observation
         document.getElementById('practice-ready-to-bet-button').addEventListener('click', handlePracticeReadyToBet);
         showScreen('practice-observation-screen');
+        practiceObservationStartTime = performance.now();
+
       }
 
       /**
@@ -881,6 +893,9 @@
             showCustomAlert("You have watched the most you can watch for this practice session.");
             return;
         }
+
+         const rt = performance.now() - practiceObservationStartTime;
+         practiceObservationRTs.push(rt);
 
         const outcomesDisplay = document.getElementById('practice-observation-outcomes-display');
         const outcome = practiceObservationSequence[currentPracticeObservationCount]; // Get outcome from pre-generated sequence
@@ -940,6 +955,8 @@
         });
 
         showScreen('practice-betting-screen');
+        practiceBettingStartTime = performance.now();
+
       }
 
       /**
@@ -957,6 +974,11 @@
 
         practiceBettingChoices.push(chosenDoor);
         practiceBettingRealities.push(reality);
+
+        const rt = performance.now() - practiceBettingStartTime;
+        practiceBettingRTs.push(rt);
+        practiceBettingStartTime = performance.now();
+
 
         const bettingOutcomesDisplay = document.getElementById('practice-betting-outcomes-display');
         const chosenDoorImg = document.createElement('img');
@@ -1097,6 +1119,7 @@
         currentSessionType = sessionType;
         currentObservationCount = 0;
         sessionData[currentSessionType].observationOutcomes = []; // Clear previous outcomes for the session
+        currentObservationStartTime = performance.now();
 
         // Pre-generate the full observation sequence based on the session's pattern
         currentObservationSequence = generateTrials(MAX_OBSERVATIONS, sessionData[currentSessionType].character, sessionData[currentSessionType].pattern);
@@ -1107,7 +1130,7 @@
         document.getElementById('observation-title').textContent = `Now watch where the ${characterDisplayName} will hide behind`; 
         
         // Update instruction text
-        document.getElementById('observation-instruction-text').textContent = `Click the glasses to watch which door the ${characterDisplayName} is hiding behind.`; 
+        document.getElementById('observation-instruction-text').textContent = `Click the glasses to watch which door the ${characterDisplayName} is hiding behind. Remember, you can click it as much as you want!`; 
 
         document.getElementById('observation-outcomes-display').innerHTML = ''; // Clear display
         document.getElementById('observe-button').addEventListener('click', handleObserveClick);
@@ -1122,33 +1145,47 @@
        * Handles the click on the "glasses" icon during observation.
        */
       function handleObserveClick() {
+        // If we’ve already hit the max, show alert and exit immediately
         if (currentObservationCount >= MAX_OBSERVATIONS) {
           showCustomAlert("You have watched the most you can watch for this session.");
           return;
         }
 
+        // ——— Record reaction time ———
+        const rtObs = performance.now() - currentObservationStartTime;
+        sessionData[currentSessionType].observationRTs.push(rtObs);
+
+        // ——— Existing logic ———
         const outcomesDisplay = document.getElementById('observation-outcomes-display');
-        // Retrieve the next outcome from the pre-generated sequence
-        const outcome = currentObservationSequence[currentObservationCount]; 
+        const outcome = currentObservationSequence[currentObservationCount];
         
         sessionData[currentSessionType].observationOutcomes.push(outcome);
         currentObservationCount++;
+        
+        // reset timer for the next observation
+        currentObservationStartTime = performance.now();
 
+        // render the image
         const img = document.createElement('img');
         if (sessionData[currentSessionType].character === 'elf') {
-            img.src = outcome === 'brown' ? 'https://github.com/ey242/OVB/raw/main/public/stim/elfbrown.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/elfblue.png';
-        } else { // princess
-            img.src = outcome === 'red' ? 'https://github.com/ey242/OVB/raw/main/public/stim/princessred.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/princessyellow.png';
+          img.src = outcome === 'brown'
+            ? 'https://github.com/ey242/OVB/raw/main/public/stim/elfbrown.png'
+            : 'https://github.com/ey242/OVB/raw/main/public/stim/elfblue.png';
+        } else {
+          img.src = outcome === 'red'
+            ? 'https://github.com/ey242/OVB/raw/main/public/stim/princessred.png'
+            : 'https://github.com/ey242/OVB/raw/main/public/stim/princessyellow.png';
         }
         img.alt = outcome;
         img.className = 'outcome-image';
         outcomesDisplay.appendChild(img);
 
-        // Show "I'm done watching and ready to guess!" button after at least one observation
+        // reveal the “ready to bet” button once they’ve seen at least one
         if (currentObservationCount > 0) {
           document.getElementById('ready-to-bet-button').classList.remove('hidden');
         }
       }
+
 
       /**
        * Handles the "I'm done watching and ready to guess!" button click, transitioning to explanation.
@@ -1182,6 +1219,8 @@
 
         document.getElementById('betting-title').textContent = `Session ${currentSessionType === 'sessionA' ? 1 : 2} Betting`; // Simplified title
         document.getElementById('current-betting-round').textContent = currentBettingRound + 1;
+
+        currentBettingStartTime = performance.now();  
 
         // Display observed outcomes from the current session in the shared display area
         const sharedOutcomesDisplay = document.getElementById('observation-outcomes-display-betting');
@@ -1242,6 +1281,8 @@
         const chosenDoor = event.target.dataset.door;
         const reality = currentBettingTrials[currentBettingRound];
         const characterType = sessionData[currentSessionType].character;
+        const rtBet = performance.now() - currentBettingStartTime;
+        sessionData[currentSessionType].bettingRTs.push(rtBet);
 
         sessionData[currentSessionType].bettingChoices.push(chosenDoor);
         sessionData[currentSessionType].bettingRealities.push(reality);
@@ -1270,6 +1311,7 @@
         if (currentBettingRound < BETTING_ROUNDS) {
           // Continue to next betting round
           // No need for a timeout or resetting chosen state on doors, as new images are appended.
+          currentBettingStartTime = performance.now(); 
         } else {
           // Betting phase complete
           document.querySelectorAll('.betting-door').forEach(door => {
@@ -1384,7 +1426,8 @@
           'Participant ID', 'Participant Age', 'Participant Sex',
           'Session Type', 'Session Pattern', 'Session Character', 
           'Trial Type', 'Trial Index', 'Player Choice', 
-          'Actual Outcome', 'Coins Earned This Trial', 'Explanation', 'Session Total Coins'
+          'Actual Outcome', 'Coins Earned This Trial', 
+          'Reaction Time (ms)', 'Explanation', 'Session Total Coins'
         ];
 
         const dataRows = [];
@@ -1412,6 +1455,7 @@
               'observe',
               outcome,
               0,
+              sessionDataObj.observationRTs[index] || '',
               '',
               ''
             ]);
@@ -1429,6 +1473,7 @@
               '',
               '',
               '',
+              '',    // Reaction Time (ms) — placeholder
               sessionDataObj.explanation,
               ''
             ]);
@@ -1449,6 +1494,7 @@
               choice,
               reality,
               coinsEarnedThisTrial,
+              sessionDataObj.bettingRTs[i] || '',
               '',
               (i === BETTING_ROUNDS - 1) ? sessionDataObj.coinsEarned : ''
             ]);
@@ -1458,8 +1504,10 @@
         // Practice session
         addSessionRows('Practice', {
           observationOutcomes: practiceObservedOutcomes,
+          observationRTs: practiceObservationRTs,
           bettingChoices: practiceBettingChoices,
           bettingRealities: practiceBettingRealities,
+          bettingRTs: practiceBettingRTs,
           coinsEarned: practiceCoinsEarned
         }, true);
 
