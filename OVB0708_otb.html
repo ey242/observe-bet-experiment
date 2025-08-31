@@ -240,6 +240,10 @@
       .custom-modal-content button:hover {
         background-color: #0056b3;
       }
+
+      .practice-ready-to-bet-button {
+        margin-top: 50px; /* Adjust this value as needed */
+      }
     </style>
   </head>
   <body>
@@ -342,6 +346,11 @@
           <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Observe">
         </button>
         <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
         <button id="practice-ready-to-bet-button" class="continue-button hidden">I’m done watching and ready to guess!</button>
     </div>
   </div>
@@ -391,6 +400,13 @@
           <button class="glasses-icon-button" id="observe-button">
             <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Observe">
           </button>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
           <br>
           <br>
           <br>
@@ -1016,7 +1032,7 @@
         const readyBtn = document.getElementById('ready-to-bet-button');
         readyBtn.addEventListener('click', (e) => {
         e.preventDefault();  // stop any default behavior
-        const msg = "Are you sure you’ve watched enough outcomes to bet wisely?";
+        const msg = "Are you sure you’ve watched enough to know how to win coins?";
         if (confirm(msg)) {
           startBettingSession(currentSessionType);
         }
