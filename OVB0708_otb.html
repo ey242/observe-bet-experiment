@@ -320,8 +320,7 @@
 
       <div id="pretrial" class="hidden">
         <img src="https://github.com/ey242/OVB/raw/main/public/stim/coin_boxes.png" alt="Coin Boxes" style="width: 750px;">
-         <p>Let’s first play a pretend game to get ready for the real one! </p>
-        <p>Look at these two boxes! A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
+        <p>Look at these two boxes and meet this wizard! His name is One Box. One Box Wizard only likes to hide coins in the same box. Your job is to find out which box the coins are in so you can win them!</p>
         <p>Are you ready to play the game?</p>
         <button id="ready-button">Continue</button> <!-- Changed to Continue -->
       </div>
@@ -332,9 +331,9 @@
       <h3>How to Play</h3>
       <p>A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
       <ol class="how-to-play-list">
-        <li><strong>Peek to Learn</strong>: First, you can look and see which box the coin is hiding. Just say peek and I’ll press this glasses button <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon">. You can peek and watch as many times as you want. In this pretend game, the coin stays in the same place. But in the real game, it will change!</li>
-        <li><strong>Make Your Guess</strong>: When you think you know where the coin is, we’ll press the box to guess. But remember, once you start guessing, you can’t look again!</li>
-        <li><strong>See Your Score</strong>: After the pretend game, we’ll see how many coins you got.</li>
+        <li><strong>Peek to Learn</strong>: First, you can look and see which box the coin is hiding. Just say peek and I’ll press this glasses button <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon">. You can peek as many times as you want. But remember, One Box Wizard only hides coins in the same box!</li>
+        <li><strong>Make Your Guess</strong>: When you think you know where the coins go, we’ll press the box to guess. But remember, once you start guessing, you can’t peek again!</li>
+        <li><strong>See Your Score</strong>: At the end of this game, we’ll count how many coins you found.</li>
       </ol>
       <p>Are you ready? Click the glasses to start peeking! <br>Remember, you can click the glasses as much as you want!</p>
       <div id="practice-observation-outcomes-display" class="observation-outcome-grid"></div>
@@ -543,7 +542,7 @@
       // --- Global Variables ---
       const MAX_OBSERVATIONS = 104; // Upper limit for observations for both practice and main sessions
       const BETTING_ROUNDS = 10;
-      const PRACTICE_ROUNDS = 10; // Number of rounds for practice betting
+      const PRACTICE_ROUNDS = 4; // Number of rounds for practice betting
 
       let participantInfo = {};
       let sessionData = {

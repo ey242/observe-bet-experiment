@@ -435,7 +435,7 @@
 
  <div id="pretrial" class="hidden">
         <img src="https://github.com/ey242/OVB/raw/main/public/stim/coin_boxes.png" alt="Coin Boxes" style="width: 750px;">
-        <p>Look at these two boxes! A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
+        <p>Look at these two boxes and meet this wizard! His name is One Box. One Box Wizard only likes to hide coins in the same box. Your job is to find out which box the coins are in so you can win them!</p>
         <p>Are you ready to play the game?</p>
         <button id="ready-button">Continue</button> <!-- Changed to Continue -->
       </div>
@@ -446,9 +446,9 @@
       <h3>How to Play</h3>
       <p>A shiny coin is hidden in one of these two boxes. Your job is to find out which box it’s in so you can win it!</p>
       <ol class="how-to-play-list">
-        <li><strong>Peek to Learn</strong>: Click on the <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon"> button below to peek and see which box hides the coin. You can peek as many times as you like. (In this practice game, the coin stays in the same box every time.)</li>
-        <li><strong>Make Your Guess</strong>: When you think you know where the coin is, click on that box to guess. Once you start guessing, you can’t peek again.</li>
-        <li><strong>See Your Score</strong>: At the end of this practice, we’ll tell you how many coins you found.</li>
+        <li><strong>Peek to Learn</strong>: Click on the <img src="https://github.com/ey242/OVB/raw/main/public/pics/Glasses1.png" alt="Glasses icon"> button below to peek and see which box hides the coin. You can peek as many times as you like. But remember, One Box Wizard only hides coins in the same box!</li>
+        <li><strong>Make Your Guess</strong>: When you think you know where the coins go, click on that box to guess. Once you start guessing, you can’t peek again.</li>
+        <li><strong>See Your Score</strong>: At the end of this game, we’ll count how many coins you found.</li>
       </ol>
       <p>Are you ready? Click the glasses to start peeking! <br>Remember, you can click it as much as you want!</p>
       <div id="practice-observation-outcomes-display" class="observation-outcome-grid"></div>
@@ -656,7 +656,7 @@
       // --- Global Variables ---
       const MAX_OBSERVATIONS = 104; // Upper limit for observations for both practice and main sessions
       const BETTING_ROUNDS = 10;
-      const PRACTICE_ROUNDS = 10; // Number of rounds for practice betting
+      const PRACTICE_ROUNDS = 4; // Number of rounds for practice betting
 
       let participantInfo = {};
       let sessionData = {
@@ -1091,7 +1091,7 @@
           imageElement.alt = `${characterDisplayName} Doors`;
 
           text1.textContent = `Now we have a ${characterDisplayName}! Look at these two doors. The ${characterDisplayName} will hide behind one of them each time.`;
-          text2.textContent = `Unlike the coin in the practice game, the ${characterDisplayName} has ${character === 'elf' ? 'its' : 'her'} very own special pattern for hiding so the hiding door can change. ${character === 'elf' ? 'It' : 'She'} will give you a coin every time you guess the right door ${character === 'elf' ? 'it' : 'she'} hides behind.`;
+          text2.textContent = `Unlike the One Box Wizard, the ${characterDisplayName} has ${character === 'elf' ? 'its' : 'her'} very own special pattern for hiding so the hiding door can change. ${character === 'elf' ? 'It' : 'She'} will give you a coin every time you guess the right door ${character === 'elf' ? 'it' : 'she'} hides behind.`;
           text3.textContent = `Your job is to win as many coins as you can! To do this, you'll first get to watch and see which door the ${characterDisplayName} is behind and learn how ${character === 'elf' ? 'it' : 'she'} hides.`;
           text4.textContent = `When you're done watching, you'll guess which door you think the ${characterDisplayName} is behind to try and win a coin! Once you start guessing, you can't go back to watching.`;
           text5.textContent = `You won't find out which door actually hid the ${characterDisplayName} until you finish all your guesses, and then we'll tell you how many coins you won. Each coin you win = $0.01 bonus payment. Are you ready to meet the ${characterDisplayName} and win coins?`;
