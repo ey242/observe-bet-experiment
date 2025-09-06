@@ -760,21 +760,39 @@
       /**
        * Starts the practice observation session.
        */
-      function startPracticeObservation() {
-        currentPracticeObservationCount = 0;
-        practiceObservedOutcomes = [];
-        // Randomly determine the fixed coin color for the practice session
-        practiceCoinColor = Math.random() < 0.5 ? 'green' : 'purple';
+      function startPracticeObservation(resetColor = false) {
+        // Only set the color the very first time (or if explicitly asked to reset)
+        if (resetColor || !practiceCoinColor) {
+          practiceCoinColor = Math.random() < 0.5 ? 'green' : 'purple';
+        }
         console.log('Practice Coin Color (Fixed):', practiceCoinColor);
 
-        // Generate practice sequence using the determined fixed color
-        practiceObservationSequence = generateTrials(MAX_OBSERVATIONS, 'coin', 'fixed'); 
+        // Reset per-practice state
+        currentPracticeObservationCount = 0;
+        practiceObservedOutcomes = [];
+        practiceObservationRTs = [];
+        currentPracticeBettingRound = 0;
+        practiceBettingChoices = [];
+        practiceBettingRealities = [];
+        practiceBettingRTs = [];
+        practiceCoinsEarned = 0;
+
+        // Generate observation sequence (color is already fixed by practiceCoinColor)
+        practiceObservationSequence = generateTrials(MAX_OBSERVATIONS, 'coin', 'fixed');
         console.log('Practice Observation Sequence:', practiceObservationSequence);
 
         document.getElementById('practice-observation-outcomes-display').innerHTML = '';
+        const observeBtn = document.getElementById('practice-observe-button');
+        const readyBtn = document.getElementById('practice-ready-to-bet-button');
+
+        // Rebind listeners cleanly
+        observeBtn.replaceWith(observeBtn.cloneNode(true));
         document.getElementById('practice-observe-button').addEventListener('click', handlePracticeObserve);
-        document.getElementById('practice-ready-to-bet-button').classList.add('hidden'); // Hide until first observation
+
+        readyBtn.classList.add('hidden');
+        readyBtn.replaceWith(readyBtn.cloneNode(true));
         document.getElementById('practice-ready-to-bet-button').addEventListener('click', handlePracticeReadyToBet);
+
         showScreen('practice-observation-screen');
         practiceObservationStartTime = performance.now();
       }
@@ -948,10 +966,42 @@
         }
         practiceSummaryDetails.appendChild(allBettingOutcomesGrid);
         
+        document.getElementById('practice-summary-continue-button').replaceWith(
+          document.getElementById('practice-summary-continue-button').cloneNode(true)
+        );
         document.getElementById('practice-summary-continue-button').addEventListener('click', () => {
+          if (practiceCoinsEarned < PRACTICE_ROUNDS) {
+            showCustomAlert("Let's practice again to make sure you've got it!", () => {
+              // Re-run practice WITHOUT resetting the coin color
+              startPracticeObservation(/* resetColor = */ false);
+            });
+          } else {
             showSessionInstruction(sessionOrder[currentSessionIndex]);
+          }
         });
+
         showScreen('practice-summary-screen');
+      }
+
+      function isStrictAlternation(choices, a, b) {
+        if (choices.length !== BETTING_ROUNDS) return false;
+        for (let i = 0; i < choices.length; i++) {
+          if (choices[i] !== a && choices[i] !== b) return false;      // only the two valid doors
+          if (i > 0 && choices[i] === choices[i - 1]) return false;     // no repeats next to each other
+        }
+        return true; // passes both ABAB... and BABA...
+      }
+
+      function realityImgSrc(character, outcome) {
+        if (character === 'elf') {
+          return outcome === 'brown'
+            ? 'https://github.com/ey242/OVB/raw/main/public/stim/elfbrown.png'
+            : 'https://github.com/ey242/OVB/raw/main/public/stim/elfblue.png';
+        } else {
+          return outcome === 'red'
+            ? 'https://github.com/ey242/OVB/raw/main/public/stim/princessred.png'
+            : 'https://github.com/ey242/OVB/raw/main/public/stim/princessyellow.png';
+        }
       }
 
       /**
@@ -1002,7 +1052,6 @@
       function handleStartSessionButtonClick() {
           startObservationSession(sessionOrder[currentSessionIndex]);
       }
-
 
       /**
        * Starts an observation session.
@@ -1206,6 +1255,18 @@
           document.querySelectorAll('.betting-door').forEach(door => {
             door.removeEventListener('click', handleBettingClick);
           });
+
+        // --- Alternation bonus logic ---
+        if (sessionData[currentSessionType].pattern === 'alternating') {
+          const doors = sessionData[currentSessionType].character === 'elf'
+            ? ['brown', 'blue']
+            : ['red', 'yellow'];
+
+          if (isStrictAlternation(sessionData[currentSessionType].bettingChoices, doors[0], doors[1])) {
+            sessionData[currentSessionType].coinsEarned = BETTING_ROUNDS; // award full 10 coins
+          }
+        }
+        // --- end alternation bonus ---
           showSessionSummary();
         }
       }
@@ -1214,31 +1275,45 @@
        * Displays the summary for the current session.
        */
       function showSessionSummary() {
-        document.getElementById('session-summary-title').textContent = `Summary`; 
-        document.getElementById('session-coins-earned').textContent = `Coins earned: ${sessionData[currentSessionType].coinsEarned} out of ${BETTING_ROUNDS}`; 
-        
+        document.getElementById('session-summary-title').textContent = `Summary`;
+        document.getElementById('session-coins-earned').textContent =
+          `Coins earned: ${sessionData[currentSessionType].coinsEarned} out of ${BETTING_ROUNDS}`;
+
         const bettingSummaryDetails = document.getElementById('betting-summary-details');
-        bettingSummaryDetails.innerHTML = '<h3>Betting Outcomes:</h3>'; // Re-add headline
+        bettingSummaryDetails.innerHTML = '<h3>Betting Outcomes:</h3>';
 
         const session = sessionData[currentSessionType];
-        // Create a single grid for all betting outcomes
         const allBettingOutcomesGrid = document.createElement('div');
         allBettingOutcomesGrid.className = 'summary-grid';
+
+        // compute what to DISPLAY as reality
+        let displayRealities = session.bettingRealities.slice(); // default = ground truth
+        if (session.pattern === 'alternating') {
+          const doors = session.character === 'elf' ? ['brown', 'blue'] : ['red', 'yellow'];
+          if (isStrictAlternation(session.bettingChoices, doors[0], doors[1])) {
+            // phase-align: show Reality == participant's alternating choices
+            displayRealities = session.bettingChoices.slice();
+          }
+        }
 
         for (let i = 0; i < session.bettingChoices.length; i++) {
           const roundContainer = document.createElement('div');
           roundContainer.className = 'summary-round-container';
 
-          // Your Choice (Door)
+          // Your Choice (door art)
           const chosenItem = document.createElement('div');
           chosenItem.className = 'summary-item';
           const chosenLabel = document.createElement('p');
-          chosenLabel.textContent = `Your Choice:`; 
+          chosenLabel.textContent = `Your Choice:`;
           const chosenImg = document.createElement('img');
           if (session.character === 'elf') {
-              chosenImg.src = session.bettingChoices[i] === 'brown' ? 'https://github.com/ey242/OVB/raw/main/public/stim/browndoor.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/bluedoor.png';
-          } else { // princess
-              chosenImg.src = session.bettingChoices[i] === 'red' ? 'https://github.com/ey242/OVB/raw/main/public/stim/reddoor.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/yellowdoor.png';
+            chosenImg.src = session.bettingChoices[i] === 'brown'
+              ? 'https://github.com/ey242/OVB/raw/main/public/stim/browndoor.png'
+              : 'https://github.com/ey242/OVB/raw/main/public/stim/bluedoor.png';
+          } else {
+            chosenImg.src = session.bettingChoices[i] === 'red'
+              ? 'https://github.com/ey242/OVB/raw/main/public/stim/reddoor.png'
+              : 'https://github.com/ey242/OVB/raw/main/public/stim/yellowdoor.png';
           }
           chosenImg.alt = session.bettingChoices[i];
           chosenImg.className = 'summary-img';
@@ -1246,18 +1321,14 @@
           chosenItem.appendChild(chosenImg);
           roundContainer.appendChild(chosenItem);
 
-          // Reality (Character)
+          // Reality (character art) — **use displayRealities**
           const realityItem = document.createElement('div');
           realityItem.className = 'summary-item';
           const realityLabel = document.createElement('p');
-          realityLabel.textContent = `Reality:`; 
+          realityLabel.textContent = `Reality:`;
           const realityImg = document.createElement('img');
-          if (session.character === 'elf') {
-              realityImg.src = session.bettingRealities[i] === 'brown' ? 'https://github.com/ey242/OVB/raw/main/public/stim/elfbrown.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/elfblue.png';
-          } else { // princess
-              realityImg.src = session.bettingRealities[i] === 'red' ? 'https://github.com/ey242/OVB/raw/main/public/stim/princessred.png' : 'https://github.com/ey242/OVB/raw/main/public/stim/princessyellow.png';
-          }
-          realityImg.alt = session.bettingRealities[i];
+          realityImg.src = realityImgSrc(session.character, displayRealities[i]);
+          realityImg.alt = displayRealities[i];
           realityImg.className = 'summary-img';
           realityItem.appendChild(realityLabel);
           realityItem.appendChild(realityImg);
@@ -1265,10 +1336,15 @@
 
           allBettingOutcomesGrid.appendChild(roundContainer);
         }
+
         bettingSummaryDetails.appendChild(allBettingOutcomesGrid);
 
-
+        // rebind continue safely
+        document.getElementById('session-continue-button').replaceWith(
+          document.getElementById('session-continue-button').cloneNode(true)
+        );
         document.getElementById('session-continue-button').addEventListener('click', handleSessionContinue);
+
         showScreen('session-summary-screen');
       }
 
