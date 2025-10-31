@@ -576,12 +576,27 @@
       </div>
     </div>
 
-    <!-- Custom Modal for Explanations -->
+    <!-- Custom Modal for Explanations (+ confidence) -->
     <div id="explanation-modal" class="custom-modal hidden">
       <div class="custom-modal-content">
-        <p id="explanation-modal-question">What do you think is the pattern to finding the princess? Can you tell us how you think she hides?</p>
+        <p id="explanation-modal-question">
+          Based on what you watched, what do you think the rule is for how the ${characterName} hides?
+        </p>
+
         <textarea id="explanation-text" placeholder="Type your explanation here..."></textarea>
-        <button id="submit-explanation-button">Submit Explanation</button>
+
+        <div style="margin-top:14px;text-align:left;">
+          <label for="explanation-confidence" style="font-weight:bold;">How confident are you about this rule?</label>
+          <div id="explanation-confidence" style="margin-top:8px;">
+            <label><input type="radio" name="rule_conf" value="1" required> 1 (not confident at all)</label><br>
+            <label><input type="radio" name="rule_conf" value="2"> 2</label><br>
+            <label><input type="radio" name="rule_conf" value="3"> 3</label><br>
+            <label><input type="radio" name="rule_conf" value="4"> 4</label><br>
+            <label><input type="radio" name="rule_conf" value="5"> 5 (very confident)</label>
+          </div>
+        </div>
+
+        <button id="submit-explanation-button">Submit</button>
       </div>
     </div>
 
@@ -648,23 +663,32 @@
        * @param {string} characterName - The name of the character for the explanation question (e.g., 'elf', 'princess').
        */
       function showExplanationModal(callback, characterName) {
-          const modal = document.getElementById('explanation-modal');
-          const textarea = document.getElementById('explanation-text');
-          const submitButton = document.getElementById('submit-explanation-button');
-          const questionElement = document.getElementById('explanation-modal-question');
+        const modal = document.getElementById('explanation-modal');
+        const textarea = document.getElementById('explanation-text');
+        const submitButton = document.getElementById('submit-explanation-button');
+        const questionElement = document.getElementById('explanation-modal-question');
 
-          questionElement.textContent = `What do you think is the pattern to finding the ${characterName}? Can you tell us how you think she hides?`;
+        // Character-aware prompt
+        questionElement.textContent =
+          `Based on what you watched, what do you think the rule is for how the ${characterName} hides?`;
 
-          textarea.value = ''; // Clear previous text
-          modal.classList.remove('hidden');
+        // Reset inputs
+        textarea.value = '';
+        Array.from(document.querySelectorAll('input[name="rule_conf"]')).forEach(r => r.checked = false);
 
-          const handleSubmit = () => {
-              modal.classList.add('hidden');
-              submitButton.removeEventListener('click', handleSubmit);
-              if (callback) callback(textarea.value);
-          };
+        modal.classList.remove('hidden');
 
-          submitButton.addEventListener('click', handleSubmit);
+        const handleSubmit = () => {
+          const confEl = document.querySelector('input[name="rule_conf"]:checked');
+          const confidence = confEl ? confEl.value : '';
+          if (!confidence) return; // require a confidence selection
+
+          modal.classList.add('hidden');
+          submitButton.removeEventListener('click', handleSubmit);
+          if (callback) callback({ text: textarea.value.trim(), confidence });
+        };
+
+        submitButton.addEventListener('click', handleSubmit);
       }
 
       // --- Global Variables ---
@@ -680,6 +704,7 @@
           observationOutcomes: [],
           observationRTs: [],        // ← track each observe click
           explanation: '',
+          explanationConfidence: '',
           bettingChoices: [],
           bettingRealities: [],
           bettingRTs: [],            // ← track each bet click
@@ -691,6 +716,7 @@
           observationOutcomes: [],
           observationRTs: [],        // ← track each observe click
           explanation: '',
+          explanationConfidence: '',
           bettingChoices: [],
           bettingRealities: [],
           bettingRTs: [],            // ← track each bet click
@@ -840,12 +866,24 @@
        * Handles the quit button click, confirming with the user and saving data.
        */
       function handleQuit() {
-        showCustomConfirm('Are you sure you want to quit? Your progress will be saved but you will not be compensated.', () => {
-          saveDataToCSV(); // Save all collected data
-          showCustomAlert('Thank you for participating. Your data has been saved.', () => {
-            window.location.reload(); // Reload the page
-          });
-        });
+        // Example hook right after user clicks "I'm done watching...":
+        showCustomConfirm(
+          "Are you sure you’ve watched enough to know how to win coins?",
+          () => {
+            // figure out the current session's character string ('elf' or 'princess')
+            const charForThisSession = sessionData[currentSessionType].character; // you already set this earlier
+            const characterDisplay = (charForThisSession === 'elf') ? 'elf' : 'princess';
+
+            showExplanationModal(({ text, confidence }) => {
+              // store into sessionData (adult file: add the confidence field)
+              sessionData[currentSessionType].explanation = text || '';
+              sessionData[currentSessionType].explanationConfidence = confidence || '';
+
+              // now proceed to betting
+              startBettingPhase();
+            }, characterDisplay);
+          }
+        );
       }
 
       // --- Session Management ---
@@ -1069,9 +1107,27 @@
         }
         practiceSummaryDetails.appendChild(allBettingOutcomesGrid);
         
-        document.getElementById('practice-summary-continue-button').addEventListener('click', () => {
-            showSessionInstruction(sessionOrder[currentSessionIndex]);
-        });
+        {
+          const contBtn = document.getElementById('practice-summary-continue-button');
+
+          // Avoid double-binding if the summary is shown more than once
+          contBtn.replaceWith(contBtn.cloneNode(true));
+          const freshContinue = document.getElementById('practice-summary-continue-button');
+
+          freshContinue.addEventListener('click', () => {
+            // practiceCoinsEarned and PRACTICE_ROUNDS are already defined in your file
+            if (practiceCoinsEarned === PRACTICE_ROUNDS) {
+              // Perfect 4/4 → proceed to the main session instructions
+              showSessionInstruction(sessionOrder[currentSessionIndex]);
+            } else {
+              // Not perfect → repeat the practice loop
+              showCustomAlert(
+                "Let's try the practice again to make sure the rules are clear. You’ll continue until you get all 4 coins."
+              );
+              startPracticeObservation();
+            }
+          });
+        }
         showScreen('practice-summary-screen');
       }
 
@@ -1132,35 +1188,71 @@
       function startObservationSession(sessionType) {
         currentSessionType = sessionType;
         currentObservationCount = 0;
-        sessionData[currentSessionType].observationOutcomes = []; // Clear previous outcomes for the session
+        sessionData[currentSessionType].observationOutcomes = []; // clear
         currentObservationStartTime = performance.now();
 
-        // Pre-generate the full observation sequence based on the session's pattern
-        currentObservationSequence = generateTrials(MAX_OBSERVATIONS, sessionData[currentSessionType].character, sessionData[currentSessionType].pattern);
-        console.log(`Observation Sequence for ${currentSessionType} (${sessionData[currentSessionType].pattern}):`, currentObservationSequence);
+        // Pre-generate observation sequence from the session’s assigned character & pattern
+        currentObservationSequence = generateTrials(
+          MAX_OBSERVATIONS,
+          sessionData[currentSessionType].character,
+          sessionData[currentSessionType].pattern
+        );
+        console.log(
+          `Observation Sequence for ${currentSessionType} (${sessionData[currentSessionType].pattern}):`,
+          currentObservationSequence
+        );
 
-        // Dynamic title for observation screen
-        const characterDisplayName = sessionData[currentSessionType].character === 'elf' ? 'elf' : 'princess';
-        document.getElementById('observation-title').textContent = `Now watch where the ${characterDisplayName} will hide behind`; 
-        
-        // Update instruction text
-        document.getElementById('observation-instruction-text').textContent = `Click the glasses to watch which door the ${characterDisplayName} is hiding behind. Remember, you can click it as much as you want!`; 
+        // Dynamic title + instruction (clean copy)
+        const characterDisplayName =
+          sessionData[currentSessionType].character === 'elf' ? 'elf' : 'princess';
+        document.getElementById('observation-title').textContent =
+          `Watch where the ${characterDisplayName} hides`;
+        document.getElementById('observation-instruction-text').textContent =
+          `Click the glasses to watch which door the ${characterDisplayName} is hiding behind. You can click as much as you want!`;
 
-        document.getElementById('observation-outcomes-display').innerHTML = ''; // Clear display
-        document.getElementById('observe-button').addEventListener('click', handleObserveClick);
-        document.getElementById('ready-to-bet-button').classList.add('hidden'); // Hide until first observation
-        document.getElementById('ready-to-bet-button').textContent = "I'm done watching and ready to guess!"; // Set button text
-        // document.getElementById('ready-to-bet-button').addEventListener('click', handleReadyToBet);
-        const readyBtn = document.getElementById('ready-to-bet-button');
-        readyBtn.addEventListener('click', (e) => {
-        e.preventDefault();  // stop any default behavior
-        const msg = "Are you sure you’ve watched enough to know how to win coins?";
-        if (confirm(msg)) {
-          startBettingSession(currentSessionType);
+        // Reset outcome list
+        document.getElementById('observation-outcomes-display').innerHTML = '';
+
+        // Rebind the "observe" button to avoid duplicate listeners on re-entry
+        {
+          const observeBtn = document.getElementById('observe-button');
+          observeBtn.replaceWith(observeBtn.cloneNode(true));
+          const freshObserveBtn = document.getElementById('observe-button');
+          freshObserveBtn.addEventListener('click', handleObserveClick);
         }
-      });
+
+        // Prepare the "ready to bet" button
+        const readyBtn = document.getElementById('ready-to-bet-button');
+        readyBtn.classList.add('hidden'); // stays hidden until the first observation elsewhere
+        readyBtn.textContent = "I'm done watching and ready to guess!";
+
+        // Rebind to our custom confirm -> explanation modal -> betting flow
+        readyBtn.replaceWith(readyBtn.cloneNode(true));
+        const freshReadyBtn = document.getElementById('ready-to-bet-button');
+        freshReadyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          // Use your custom confirm (must exist in your file; same one the kids build uses)
+          showCustomConfirm(
+            "Are you sure you’ve watched enough to know how to win coins?",
+            () => {
+              const charName = sessionData[currentSessionType].character; // 'elf' or 'princess'
+
+              // Character-aware explanation + confidence modal (same helper as kids build)
+              showExplanationModal(({ text, confidence }) => {
+                sessionData[currentSessionType].explanation = text || '';
+                sessionData[currentSessionType].explanationConfidence = confidence || '';
+
+                // Now proceed to betting
+                startBettingSession(currentSessionType);
+              }, charName);
+            }
+          );
+        });
+
         showScreen('observation-screen');
       }
+
 
       /**
        * Handles the click on the "glasses" icon during observation.
@@ -1448,7 +1540,7 @@
           'Session Type', 'Session Pattern', 'Session Character', 
           'Trial Type', 'Trial Index', 'Player Choice', 
           'Actual Outcome', 'Coins Earned This Trial', 
-          'Reaction Time (ms)', 'Explanation', 'Session Total Coins'
+          'Reaction Time (ms)', 'Explanation', 'Explanation Confidence', 'Session Total Coins'
         ];
 
         const dataRows = [];
@@ -1496,6 +1588,7 @@
               '',
               '',    // Reaction Time (ms) — placeholder
               sessionDataObj.explanation,
+              sessionDataObj.explanationConfidence || '', 
               ''
             ]);
           }
@@ -1516,6 +1609,7 @@
               reality,
               coinsEarnedThisTrial,
               sessionDataObj.bettingRTs[i] || '',
+              '',
               '',
               (i === BETTING_ROUNDS - 1) ? sessionDataObj.coinsEarned : ''
             ]);
