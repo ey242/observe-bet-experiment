@@ -237,6 +237,62 @@
         border: none;
       }
 
+      /* Explanation modal layout + outcomes strip */
+      #explanation-modal {
+        background-color: transparent;      /* keep background undimmed */
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .explanation-modal-content {
+        max-width: 900px;
+        width: 90%;
+        margin-top: 40px;
+      }
+
+      #explanation-outcomes-grid {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 40px;
+        gap: 40px;
+        margin-bottom: 40px;
+        justify-content: flex-start;
+      }
+
+      .explanation-outcome-img {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+      }
+
+      /* side-by-side Q layout */
+
+      .explanation-layout {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+      }
+
+      .explanation-left,
+      .explanation-right {
+        flex: 1;
+      }
+
+      #explanation-modal-question,
+      #explanation-confidence-label {
+        margin-top: 0;
+        font-weight: normal; /* remove bold */
+      }
+
+      #explanation-text {
+        width: 100%;
+        min-height: 140px;
+        font-size: 14px;
+      }
+      #explanation-confidence label {
+        font-size: 14px;
+      }
+
       /* Observation confidence probe: no blackout, bottom-floating card */
       #obs-confidence-modal {
         background-color: transparent;      /* no dark overlay */
@@ -503,25 +559,35 @@
 
     <!-- Custom Modal for Explanations (+ confidence) -->
     <div id="explanation-modal" class="custom-modal hidden">
-      <div class="custom-modal-content">
-        <p id="explanation-modal-question">
-          Based on what you watched, how do you think the ${characterName} hides?
-        </p>
+      <div class="custom-modal-content explanation-modal-content">
+        
+        <!-- NEW: observed outcomes strip -->
+        <div id="explanation-outcomes-grid"></div>
 
-        <textarea id="explanation-text" placeholder="Type your explanation here..."></textarea>
+        <div class="explanation-layout">
+          <!-- Left: free explanation -->
+          <div class="explanation-left">
+            <p id="explanation-modal-question"></p>
+            <textarea id="explanation-text"
+                      placeholder="Type your explanation here..."></textarea>
+          </div>
 
-        <div style="margin-top:14px;text-align:left;">
-          <label for="explanation-confidence" style="font-weight:bold;">How sure are you about how the ${characterName} hides?</label>
-          <div id="explanation-confidence" style="margin-top:8px;">
-            <label><input type="radio" name="rule_conf" value="1" required> 1 (not sure at all)</label><br>
-            <label><input type="radio" name="rule_conf" value="2"> 2 (a little sure)</label><br>
-            <label><input type="radio" name="rule_conf" value="3"> 3 (kind of sure)</label><br>
-            <label><input type="radio" name="rule_conf" value="4"> 4 (very sure)</label><br>
-            <label><input type="radio" name="rule_conf" value="5"> 5 (super sure, as sure as you can be)</label>
+          <!-- Right: confidence question -->
+          <div class="explanation-right">
+            <p id="explanation-confidence-label"></p>
+            <div id="explanation-confidence">
+              <label><input type="radio" name="rule_conf" value="1"> 1 (not sure at all)</label><br>
+              <label><input type="radio" name="rule_conf" value="2"> 2 (a little sure)</label><br>
+              <label><input type="radio" name="rule_conf" value="3"> 3 (kind of sure)</label><br>
+              <label><input type="radio" name="rule_conf" value="4"> 4 (very sure)</label><br>
+              <label><input type="radio" name="rule_conf" value="5"> 5 (super sure, as sure as you can be)</label>
+            </div>
           </div>
         </div>
 
-        <button id="submit-explanation-button">Submit</button>
+        <div style="text-align:center; margin-top:16px;">
+          <button id="submit-explanation-button">Submit</button>
+        </div>
       </div>
     </div>
 
@@ -625,29 +691,50 @@
        * @param {function} callback - function({text, confidence})
        * @param {string} characterName - 'elf' or 'princess'
        */
-      function showExplanationModal(callback, characterName) {
+      function showExplanationModal(callback, characterName, outcomes) {
         const modal = document.getElementById('explanation-modal');
         const textarea = document.getElementById('explanation-text');
         const submitButton = document.getElementById('submit-explanation-button');
         const questionElement = document.getElementById('explanation-modal-question');
+        const confLabel = document.getElementById('explanation-confidence-label');
+        const outcomesGrid = document.getElementById('explanation-outcomes-grid');
 
-        // Insert the character into the question
+        // Text
         questionElement.textContent =
-          `Based on what you watched, what do you think the rule is for how the ${characterName} hides?`;
+          `Based on what you watched, how do you think the ${characterName} hides?`;
+        confLabel.textContent =
+          `How sure are you about how the ${characterName} hides?`;
+
+        // Observation outcomes strip
+        outcomesGrid.innerHTML = '';
+        (outcomes || []).forEach(o => {
+          const img = document.createElement('img');
+          if (characterName === 'elf') {
+            img.src = o === 'brown'
+              ? 'https://github.com/ey242/OVB/raw/main/public/stim/elfbrown.png'
+              : 'https://github.com/ey242/OVB/raw/main/public/stim/elfblue.png';
+          } else { // princess
+            img.src = o === 'red'
+              ? 'https://github.com/ey242/OVB/raw/main/public/stim/princessred.png'
+              : 'https://github.com/ey242/OVB/raw/main/public/stim/princessyellow.png';
+          }
+          img.alt = o;
+          img.className = 'explanation-outcome-img';
+          outcomesGrid.appendChild(img);
+        });
 
         // Reset fields
         textarea.value = '';
-        // clear previous confidence selection
-        Array.from(document.querySelectorAll('input[name="rule_conf"]')).forEach(r => r.checked = false);
+        document
+          .querySelectorAll('input[name="rule_conf"]')
+          .forEach(r => r.checked = false);
 
         modal.classList.remove('hidden');
 
         const handleSubmit = () => {
           const confEl = document.querySelector('input[name="rule_conf"]:checked');
           const confidence = confEl ? confEl.value : '';
-
-          // Basic guard: require a confidence selection
-          if (!confidence) return;
+          if (!confidence) return; // force them to choose
 
           modal.classList.add('hidden');
           submitButton.removeEventListener('click', handleSubmit);
@@ -1211,23 +1298,21 @@
         currentSessionType = sessionType;
         currentObservationCount = 0;
 
-        const session = sessionData[currentSessionType];
+        const session = sessionData[sessionType];
         session.observationOutcomes = [];
         session.observationRTs = [];
         session.obsConfidence = {};
-        session.patternDoors = null;
+        session.patternDoors = session.patternDoors || null; // keep if already set
+        // DO NOT touch session.explanation / session.confidence here
 
-        // If this is one of the complex patterns, randomly assign A/B to doors
-        if (session.pattern === 'AAB' || session.pattern === 'ABB' || session.pattern === 'AABB') {
+        // For complex patterns, (re)assign A/B mapping once per session
+        if (!session.patternDoors &&
+            (session.pattern === 'AAB' || session.pattern === 'ABB' || session.pattern === 'AABB')) {
           const baseDoors = session.character === 'elf'
             ? ['brown', 'blue']
             : ['red', 'yellow'];
-
           shuffleArray(baseDoors);
-          session.patternDoors = {
-            A: baseDoors[0],
-            B: baseDoors[1]
-          };
+          session.patternDoors = { A: baseDoors[0], B: baseDoors[1] };
         }
 
         // Pre-generate observation sequence using (possibly) patternDoors
@@ -1239,7 +1324,7 @@
           session.patternDoors
         );
         console.log(
-          `Observation Sequence for ${currentSessionType} (${session.pattern}):`,
+          `Observation Sequence for ${sessionType} (${session.pattern}):`,
           currentObservationSequence
         );
 
@@ -1249,23 +1334,44 @@
         document.getElementById('observation-instruction-text').textContent =
           `Click the glasses to watch which door the ${characterDisplayName} is hiding behind. Remember, you can click it as much as you want!`;
 
+        // Clear outcomes grid
         document.getElementById('observation-outcomes-display').innerHTML = '';
-        document.getElementById('observe-button').addEventListener('click', handleObserveClick);
-        const readyBtn = document.getElementById('ready-to-bet-button');
+
+        // --- Rebind observe button cleanly ---
+        const oldObserve = document.getElementById('observe-button');
+        const newObserve = oldObserve.cloneNode(true);
+        oldObserve.parentNode.replaceChild(newObserve, oldObserve);
+        newObserve.addEventListener('click', handleObserveClick);
+
+        // --- Rebind ready-to-bet button cleanly, per session ---
+        const oldReady = document.getElementById('ready-to-bet-button');
+        const readyBtn = oldReady.cloneNode(true);
+        oldReady.parentNode.replaceChild(readyBtn, oldReady);
+
         readyBtn.classList.add('hidden');
         readyBtn.textContent = "I'm done watching and ready to guess!";
+
+        // Capture this sessionType + its object so the callback can't drift
+        const thisSessionType = sessionType;
 
         readyBtn.addEventListener('click', (e) => {
           e.preventDefault();
           const msg = "Are you sure you’ve watched enough to know how to win coins?";
-          if (confirm(msg)) {
-            const characterName = session.character;
-            showExplanationModal(({ text, confidence }) => {
+          if (!confirm(msg)) return;
+
+          const characterName = sessionData[thisSessionType].character === 'elf'
+            ? 'elf'
+            : 'princess';
+
+          showExplanationModal(
+            ({ text, confidence }) => {
               session.explanation = text;
               session.confidence = confidence;
               startBettingSession(currentSessionType);
-            }, characterName);
-          }
+            },
+            characterName,
+            session.observationOutcomes
+          );
         });
 
         showScreen('observation-screen');
@@ -1317,25 +1423,6 @@
             sessionData[currentSessionType].obsConfidence[currentObservationCount] = rating;
           });
         }
-      }
-
-      /**
-       * Handles the "I'm done watching and ready to guess!" button click, transitioning to explanation.
-       */
-      function handleReadyToBet() {
-        document.getElementById('observe-button').removeEventListener('click', handleObserveClick);
-        document.getElementById('ready-to-bet-button').removeEventListener('click', handleReadyToBet);
-        // Pass the character name to the explanation modal
-        showExplanationModal(handleExplanationSubmitted, sessionData[currentSessionType].character);
-      }
-
-      /**
-       * Callback after explanation is submitted, transitions to betting.
-       * @param {string} explanationText - The text entered by the participant.
-       */
-      function handleExplanationSubmitted(explanationText) {
-        sessionData[currentSessionType].explanation = explanationText;
-        startBettingSession(currentSessionType);
       }
 
       /**
@@ -1702,7 +1789,7 @@
         if (link.download !== undefined) {
           const url = URL.createObjectURL(blob);
           link.setAttribute("href", url);
-          link.setAttribute("download", `participant_${participantInfo.SID || 'unknown'}_experiment_data.csv`);
+          link.setAttribute("download", `participant_${participantInfo.SID || 'unknown'}_observethenbet.csv`);
           link.style.visibility = 'hidden';
           document.body.appendChild(link);
           link.click();
