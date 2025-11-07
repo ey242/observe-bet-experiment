@@ -237,6 +237,20 @@
         border: none;
       }
 
+      /* Observation confidence probe: no blackout, bottom-floating card */
+      #obs-confidence-modal {
+        background-color: transparent;      /* no dark overlay */
+        align-items: flex-end;              /* push to bottom */
+        justify-content: center;            /* center horizontally */
+        pointer-events: auto;               /* still clickable */
+      }
+
+      #obs-confidence-modal .custom-modal-content {
+        max-width: 520px;
+        margin-bottom: 40px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      }
+
       .custom-modal-content button:hover {
         background-color: #0056b3;
       }
@@ -464,23 +478,46 @@
       </div>
     </div>
 
+    <!-- Observation Confidence Modal -->
+    <div id="obs-confidence-modal" class="custom-modal hidden">
+      <div class="custom-modal-content">
+        <p id="obs-confidence-question">
+          How sure are you right now about how the character is hiding?
+        </p>
+        <div id="obs-confidence-options"
+            style="text-align:left; margin-top:10px; font-size:16px;">
+          <label><input type="radio" name="obs_conf" value="1">
+            1 – Not sure at all</label><br>
+          <label><input type="radio" name="obs_conf" value="2">
+            2 – A little sure</label><br>
+          <label><input type="radio" name="obs_conf" value="3">
+            3 – Kind of sure</label><br>
+          <label><input type="radio" name="obs_conf" value="4">
+            4 – Very sure</label><br>
+          <label><input type="radio" name="obs_conf" value="5">
+            5 – Super sure (as sure as you can be)</label>
+        </div>
+        <button id="obs-confidence-submit">OK</button>
+      </div>
+    </div>
+
     <!-- Custom Modal for Explanations (+ confidence) -->
     <div id="explanation-modal" class="custom-modal hidden">
       <div class="custom-modal-content">
         <p id="explanation-modal-question">
-          Based on what you watched, what do you think the rule is for how the ${characterName} hides?
+          Based on what you watched, how do you think the ${characterName} hides?
         </p>
 
         <textarea id="explanation-text" placeholder="Type your explanation here..."></textarea>
 
         <div style="margin-top:14px;text-align:left;">
-          <label for="explanation-confidence" style="font-weight:bold;">How confident are you about this rule?</label>
+          <label for="explanation-confidence" style="font-weight:bold;">How sure are you about how the ${characterName} hides?</label>
           <div id="explanation-confidence" style="margin-top:8px;">
-            <label><input type="radio" name="rule_conf" value="1" required> 1 (not confident at all)</label><br>
-            <label><input type="radio" name="rule_conf" value="2"> 2</label><br>
-            <label><input type="radio" name="rule_conf" value="3"> 3</label><br>
-            <label><input type="radio" name="rule_conf" value="4"> 4</label><br>
-            <label><input type="radio" name="rule_conf" value="5"> 5 (very confident)</label>
+            <label><input type="radio" name="rule_conf" value="1" required> 1 (not sure at all)</label><br>
+            <label><input type="radio" name="rule_conf" value="2"> 2 (a little sure)</label><br>
+            <label><input type="radio" name="rule_conf" value="3"> 3 (kind of sure)</label><br>
+            <label><input type="radio" name="rule_conf" value="4"> 4 (very sure)</label><br>
+            <label><input type="radio" name="rule_conf" value="5"> 5 (super sure, as sure as you can be)</label>
           </div>
         </div>
 
@@ -550,6 +587,40 @@
       }
 
       /**
+       * Shows the observation confidence probe (1–5) and returns the rating via callback.
+       * Asked "every other" observation trial.
+       */
+      function showObsConfidenceModal(characterName, trialIndex, callback) {
+        const modal = document.getElementById('obs-confidence-modal');
+        const question = document.getElementById('obs-confidence-question');
+        const submitBtn = document.getElementById('obs-confidence-submit');
+
+        // Character-specific, simple wording
+        question.textContent =
+          `How sure are you right now about how the ${characterName} is hiding?`;
+
+        // Reset radio buttons
+        document
+          .querySelectorAll('input[name="obs_conf"]')
+          .forEach(r => { r.checked = false; });
+
+        modal.classList.remove('hidden');
+
+        const handleSubmit = () => {
+          const checked = document.querySelector('input[name="obs_conf"]:checked');
+          if (!checked) return; // require a choice before continuing
+
+          const rating = parseInt(checked.value, 10);
+          modal.classList.add('hidden');
+          submitBtn.removeEventListener('click', handleSubmit);
+
+          if (callback) callback(rating);
+        };
+
+        submitBtn.addEventListener('click', handleSubmit);
+      }
+
+      /**
        * Shows the rule-explanation modal (character-aware) and returns text+confidence via callback.
        * @param {function} callback - function({text, confidence})
        * @param {string} characterName - 'elf' or 'princess'
@@ -598,8 +669,9 @@
           character: '', // 'elf' or 'princess'
           observationOutcomes: [],
           observationRTs: [],
+          obsConfidence: {},
           explanation: '',
-          explanationConfidence: '',
+          confidence: '',
           bettingChoices: [],
           bettingRealities: [],
           bettingRTs: [],
@@ -610,8 +682,9 @@
           character: '', // 'elf' or 'princess'
           observationOutcomes: [],
           observationRTs: [],
+          obsConfidence: {},
           explanation: '',
-          explanationConfidence: '',
+          confidence: '',
           bettingChoices: [],
           bettingRealities: [],
           bettingRTs: [],
@@ -1094,6 +1167,8 @@
         currentSessionType = sessionType;
         currentObservationCount = 0;
         sessionData[currentSessionType].observationOutcomes = []; // Clear previous outcomes for the session
+        sessionData[currentSessionType].observationRTs = [];
+        sessionData[currentSessionType].obsConfidence = {};
 
         // Pre-generate the full observation sequence based on the session's pattern
         currentObservationSequence = generateTrials(MAX_OBSERVATIONS, sessionData[currentSessionType].character, sessionData[currentSessionType].pattern);
@@ -1120,7 +1195,7 @@
             const characterName = sessionData[currentSessionType].character; // 'elf' or 'princess'
             showExplanationModal(({ text, confidence }) => {
               sessionData[currentSessionType].explanation = text;
-              sessionData[currentSessionType].explanationConfidence = confidence;
+              sessionData[currentSessionType].confidence = confidence;
               startBettingSession(currentSessionType);
             }, characterName);
           }
@@ -1160,9 +1235,19 @@
         img.className = 'outcome-image';
         outcomesDisplay.appendChild(img);
 
-        // Show "I'm done watching and ready to guess!" button after at least one observation
-        if (currentObservationCount > 0) {
+        // Show "I'm done watching and ready to guess!" button after at least two observations
+        if (currentObservationCount > 1) {
           document.getElementById('ready-to-bet-button').classList.remove('hidden');
+        }
+        if (currentObservationCount % 3 === 0) {
+          const charName = sessionData[currentSessionType].character === 'elf'
+            ? 'elf'
+            : 'princess';
+
+          showObsConfidenceModal(charName, currentObservationCount, (rating) => {
+            // store as: obsConfidence[trialIndex] = rating
+            sessionData[currentSessionType].obsConfidence[currentObservationCount] = rating;
+          });
         }
       }
 
@@ -1419,7 +1504,7 @@
         const header = [
           'Test Date', 'Experimenter Name', 'Participant ID', 'Participant Age', 'Participant Sex',
           'Session Type', 'Session Pattern', 'Session Character', 'Trial Type', 'Trial Index', 'Player Choice', 'Actual Outcome', 'Coins Earned This Trial', 
-          'Reaction Time (ms)', 'Explanation', 'Explanation Confidence', 'Session Total Coins'
+          'Reaction Time (ms)', 'Explanation', 'Confidence', 'Session Total Coins'
         ];
 
         const dataRows = [];
@@ -1439,24 +1524,32 @@
 
             // Add rows for observations
             sessionDataObj.observationOutcomes.forEach((outcome, index) => {
-                const rt = isPractice
-                    ? practiceObservationRTs[index] || ''
-                    : (sessionDataObj.observationRTs ? sessionDataObj.observationRTs[index] || '' : '');
-                dataRows.push([
-                    ...baseParticipantInfo,
-                    sessionName,
-                    sessionPattern,
-                    sessionCharacter,
-                    'Observation',
-                    index + 1, // Trial Index
-                    'observe', // Player Choice
-                    outcome, // Actual Outcome
-                    0, // Coins Earned This Trial
-                    rt, // Reaction Time
-                    '', // Explanation 
-                    '', // Explanation Confidence 
-                    '' // Session Total Coins 
-                ]);
+              const trialIndex = index + 1;
+              const rt = isPractice
+                ? practiceObservationRTs[index] || ''
+                : (sessionDataObj.observationRTs ? sessionDataObj.observationRTs[index] || '' : '');
+
+              // For main sessions: pull confidence if a probe was asked on this trial
+              const conf =
+                !isPractice && sessionDataObj.obsConfidence
+                  ? (sessionDataObj.obsConfidence[trialIndex] || '')
+                  : '';
+
+              dataRows.push([
+                ...baseParticipantInfo,
+                sessionName,
+                sessionPattern,
+                sessionCharacter,
+                'Observation',
+                trialIndex,
+                'observe',
+                outcome,
+                0,
+                rt,
+                '',      // Explanation (blank for obs)
+                conf,    // Confidence (probe rating if exists)
+                ''       // Session Total Coins
+              ]);
             });
 
             // Add a row for the explanation (only for main sessions, not practice)
@@ -1473,34 +1566,39 @@
                     '', // Coins Earned This Trial 
                     '', // Reaction Time 
                     sessionDataObj.explanation,
-                    sessionDataObj.explanationConfidence || '', 
+                    sessionDataObj.confidence || '', 
                     '' // Session Total Coins 
                 ]);
             }
 
             // Add rows for betting
-            for (let i = 0; i < BETTING_ROUNDS; i++) {
-                const choice = sessionDataObj.bettingChoices[i] || '';
-                const reality = sessionDataObj.bettingRealities[i] || '';
-                const coinsEarnedThisTrial = (choice && reality && choice === reality) ? 1 : 0;
-                const rt = isPractice
-                    ? practiceBettingRTs[i] || ''
-                    : (sessionDataObj.bettingRTs ? sessionDataObj.bettingRTs[i] || '' : '');
-                dataRows.push([
-                    ...baseParticipantInfo,
-                    sessionName,
-                    sessionPattern,
-                    sessionCharacter,
-                    'Betting', // Trial Type
-                    i + 1, // Trial Index
-                    choice, // Player Choice
-                    reality, // Actual Outcome
-                    coinsEarnedThisTrial, // Coins Earned This Trial
-                    rt,
-                    '', // Explanation 
-                    '', // Explanation Confidence 
-                    (i === BETTING_ROUNDS - 1) ? sessionDataObj.coinsEarned : '' // Session Total Coins 
-                ]);
+            const totalBettingTrials = isPractice
+              ? sessionDataObj.bettingChoices.length
+              : BETTING_ROUNDS;
+
+            for (let i = 0; i < totalBettingTrials; i++) {
+              const choice = sessionDataObj.bettingChoices[i] || '';
+              const reality = sessionDataObj.bettingRealities[i] || '';
+              const coinsEarnedThisTrial = (choice && reality && choice === reality) ? 1 : 0;
+              const rt = isPractice
+                ? (practiceBettingRTs[i] || '')
+                : (sessionDataObj.bettingRTs ? sessionDataObj.bettingRTs[i] || '' : '');
+
+              dataRows.push([
+                ...baseParticipantInfo,
+                sessionName,
+                sessionPattern,
+                sessionCharacter,
+                'Betting',
+                i + 1,
+                choice,
+                reality,
+                coinsEarnedThisTrial,
+                rt,
+                '',
+                '',
+                (i === totalBettingTrials - 1) ? sessionDataObj.coinsEarned : ''
+              ]);
             }
         }
 
