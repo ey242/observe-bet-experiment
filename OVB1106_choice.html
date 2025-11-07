@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hide and Seek Coin Game</title>
+  <title>Hide and Seek Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -55,7 +55,6 @@
       border: 1px solid #ccc;
     }
 
-    /* Observation grid - bigger images for kids */
     .observation-outcome-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -74,7 +73,7 @@
 
     .friend-header {
       display: flex;
-      flex-direction: column;   /* stack title over image */
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 12px;
@@ -87,16 +86,10 @@
     }
 
     .friend-doors {
-      width: 600px;            
+      width: 600px;
       height: auto;
       object-fit: contain;
     }
-/* 
-    .friend-header img {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-    } */
 
     .friend-choose-container {
       display: flex;
@@ -150,8 +143,7 @@
       box-shadow: 0 0 10px rgba(40,167,69,0.4);
     }
 
-    /* Inline follow-up panel (no blackout) */
-    #choice-followup {
+    .choice-followup {
       margin: 20px auto 0;
       padding: 16px 18px;
       max-width: 750px;
@@ -162,11 +154,11 @@
       font-size: 15px;
     }
 
-    #choice-followup h3 {
+    .choice-followup h3 {
       margin-top: 0;
     }
 
-    #choice-followup textarea {
+    .choice-followup textarea {
       width: 100%;
       min-height: 70px;
       padding: 8px;
@@ -177,16 +169,11 @@
       margin-bottom: 10px;
     }
 
-    #choice-followup .scale-group {
-      margin-bottom: 10px;
-    }
-
-    #choice-followup label {
+    .choice-followup label {
       margin-right: 10px;
       font-size: 14px;
     }
 
-    /* Simple custom alert modal */
     .custom-modal {
       position: fixed;
       top: 0;
@@ -217,13 +204,10 @@
 <body>
 <div id="experiment-container">
 
-  <!-- 1. Participant Info FIRST -->
+  <!-- Participant Info -->
   <div id="participant-info-screen">
     <h2 class="center">Who do you want to play hide-and-seek with?</h2>
     <form id="info-form">
-      <!-- <label>Test Date
-        <input type="text" name="test_date" placeholder="mm/dd/yyyy" required> -->
-      <!-- </label> -->
       <label>Experimenter initials
         <input type="text" name="experimenter" required>
       </label>
@@ -240,14 +224,14 @@
     </form>
   </div>
 
-  <!-- 2. Start screen (Ready / Decline) -->
+  <!-- Start screen -->
   <div id="start-screen" class="hidden center">
-    <h2>Ready to play a hiding-and-seek coin game?</h2>
+    <h2>Ready to play a hide and seek game?</h2>
     <p>
-      In this game, I will introduce you to two friends, <strong>Alice</strong> and <strong>Lily</strong>, who love to hide behind two different doors.
-      They will give you a coin every time you guess where they are hiding correctly.
+      In this game, I will introduce you to two friends, <strong>Alice</strong> and <strong>Lily</strong>,
+      who love to hide behind two different doors.
     </p>
-    <p>Your job is to figure out who is easier to predict so you can try to win the most coins!</p>
+    <p>Your job is to watch how they hide and answer some questions about them.</p>
 
     <div style="display:flex; justify-content:center; gap:40px; margin:20px 0;">
       <div>
@@ -266,12 +250,7 @@
     <button id="start-decline-button">I don't want to play</button>
   </div>
 
-  <!-- 3. (Unused consent screen left in case you reinstate it) -->
-  <div id="consent-screen" class="hidden">
-    <!-- intentionally not wired in this version -->
-  </div>
-
-  <!-- 4. Observation screen -->
+  <!-- Observation screen -->
   <div id="observation-screen" class="hidden">
     <div class="friend-header">
       <h2 id="obs-title"></h2>
@@ -284,63 +263,80 @@
     </div>
   </div>
 
-  <!-- 5. Choice screen (pick friend) -->
-  <div id="choice-screen" class="hidden">
-    <h2 class="center">Which friend do you want to play with?</h2>
-    <p class="center">
-      Alice or Lily will give you a coin every time you guess where they are hiding correctly.
-      Whose hiding do you think you can guess?
-      Choose the friend you think will help you win the <strong>most coins</strong>.
-    </p>
+  <!-- Choice 1: easier to guess -->
+  <div id="easy-choice-screen" class="hidden">
+    <h2 class="center"><strong>Whose hiding is easier to guess?</strong></h2>
+    <p class="center">Look at how Alice and Lily hid. Tap the friend whose hiding is easier to guess.</p>
+
     <div class="friend-choose-container">
-      <div id="choose-alice" class="friend-card">
+      <div id="easy-choose-alice" class="friend-card">
         <img src="https://github.com/ey242/OVB/raw/main/public/stim/alice.png"
              alt="Alice" class="friend-main">
         <strong>Alice</strong>
-        <div id="alice-outcomes" class="choice-outcome-grid"></div>
+        <div id="easy-alice-outcomes" class="choice-outcome-grid"></div>
       </div>
 
-      <div id="choose-lily" class="friend-card">
+      <div id="easy-choose-lily" class="friend-card">
         <img src="https://github.com/ey242/OVB/raw/main/public/stim/lily.png"
              alt="Lily" class="friend-main">
         <strong>Lily</strong>
-        <div id="lily-outcomes" class="choice-outcome-grid"></div>
+        <div id="easy-lily-outcomes" class="choice-outcome-grid"></div>
       </div>
     </div>
 
-    <!-- Inline follow-up (no blackout) -->
-    <div id="choice-followup" class="hidden">
-      <h3 id="followup-title"></h3>
+    <div id="easy-choice-followup" class="choice-followup hidden">
+      <h3 id="easy-followup-title"></h3>
       <div class="scale-group">
-        <label for="why-text"><strong>Why did you pick this friend?</strong></label>
-        <textarea id="why-text" placeholder="You can tell us what you noticed."></textarea>
+        <label for="easy-why-text"><strong>Why did you pick this friend?</strong></label>
+        <textarea id="easy-why-text" placeholder="You can tell us what you noticed."></textarea>
       </div>
       <div class="scale-group">
-        <strong>How sure are you?</strong><br>
-        <label><input type="radio" name="sure" value="1"> 1 (not sure at all)</label>
-        <label><input type="radio" name="sure" value="2"> 2 (a little sure)</label>
-        <label><input type="radio" name="sure" value="3"> 3 (kind of sure)</label>
-        <label><input type="radio" name="sure" value="4"> 4 (very sure)</label>
-        <label><input type="radio" name="sure" value="5"> 5 (super sure)</label>
-      </div>
-      <div class="scale-group">
-        <strong>How many coins do you think you can win with this friend?</strong><br>
-        <label><input type="radio" name="coins" value="all"> All of the coins</label><br>
-        <label><input type="radio" name="coins" value="many"> Many coins</label><br>
-        <label><input type="radio" name="coins" value="some"> Some coins</label><br>
-        <label><input type="radio" name="coins" value="few"> Very few coins</label><br>
-        <label><input type="radio" name="coins" value="none"> No coins</label>
+        <label for="easy-how-text"><strong>How does this friend hide?</strong></label>
+        <textarea id="easy-how-text" placeholder="Tell us how you think they choose where to hide."></textarea>
       </div>
       <div class="center">
-        <button id="followup-submit-button">Finish</button>
+        <button id="easy-followup-submit-button">Next</button>
       </div>
     </div>
   </div>
 
-  <!-- 7. Final screen -->
+  <!-- Choice 2: who to play with -->
+  <div id="play-choice-screen" class="hidden">
+    <h2 class="center"><strong>Who do you want to play with?</strong></h2>
+    <p class="center">Look again at how Alice and Lily hid. Tap the friend you would like to play hide and seek with.</p>
+
+    <div class="friend-choose-container">
+      <div id="play-choose-alice" class="friend-card">
+        <img src="https://github.com/ey242/OVB/raw/main/public/stim/alice.png"
+             alt="Alice" class="friend-main">
+        <strong>Alice</strong>
+        <div id="play-alice-outcomes" class="choice-outcome-grid"></div>
+      </div>
+
+      <div id="play-choose-lily" class="friend-card">
+        <img src="https://github.com/ey242/OVB/raw/main/public/stim/lily.png"
+             alt="Lily" class="friend-main">
+        <strong>Lily</strong>
+        <div id="play-lily-outcomes" class="choice-outcome-grid"></div>
+      </div>
+    </div>
+
+    <div id="play-choice-followup" class="choice-followup hidden">
+      <h3 id="play-followup-title"></h3>
+      <div class="scale-group">
+        <label for="play-why-text"><strong>Why did you pick this friend?</strong></label>
+        <textarea id="play-why-text" placeholder="You can tell us what you noticed."></textarea>
+      </div>
+      <div class="center">
+        <button id="play-followup-submit-button">Finish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final -->
   <div id="final-screen" class="hidden center">
     <h2>All done!</h2>
-    <p>Thank you for playing our hiding-and-seek coin game.</p>
+    <p>Thank you for playing our hiding-and-seek game.</p>
     <p>Your answers have been saved.</p>
     <button id="final-download-button">Download data</button>
   </div>
@@ -355,7 +351,7 @@
 </div>
 
 <script>
-  // ================== Utility: show/hide screens ==================
+  // -------- Utility --------
   function showScreen(id) {
     document.querySelectorAll('#experiment-container > div')
       .forEach(div => div.classList.add('hidden'));
@@ -385,7 +381,7 @@
     }
   }
 
-  // ================== Friend & pattern configuration ==================
+  // -------- Friend & patterns --------
 
   const friends = {
     alice: {
@@ -422,17 +418,13 @@
     sequences: {}
   };
 
-  let currentObsFriendIndex = 0; // 0 or 1
+  let currentObsFriendIndex = 0;
   let currentObsIndex = 0;
 
-  let choiceData = {
-    chosenFriend: null,
-    why: '',
-    sure: '',
-    coinsExpect: ''
-  };
+  let easyChoice = { friend: null, why: '', how: '' };
+  let playChoice = { friend: null, why: '' };
 
-  // ================== Pattern helpers ==================
+  // -------- Pattern helpers --------
 
   function generateStructuredSequence(pattern, A, B, length = 6) {
     let base;
@@ -454,19 +446,29 @@
     return seq.map(x => (x === A ? 'A' : 'B'));
   }
 
-  function isBannedPattern(letters) {
-    const s = letters.join('');
-    const banned = [
-      'AAABBB', 'BBBAAA',
-      'ABABAB', 'BABABA',
-      'AABAAB', 'BBAABB',
-      'ABBABB', 'BAABBA'
-    ];
-    return banned.includes(s);
+  const BANNED_PATTERNS = [
+    'AAABBB','BBBAAA',
+    'ABABAB','BABABA',
+    'AABAAB','BBAABB',
+    'ABBABB','BAABBA'
+  ];
+
+  // Check banned patterns under both possible A/B labelings
+  function isStructuredLikeUnderAnyMapping(seq, door1, door2) {
+    const s1 = lettersFromSeq(seq, door1, door2).join('');
+    const s2 = lettersFromSeq(seq, door2, door1).join('');
+    return BANNED_PATTERNS.includes(s1) || BANNED_PATTERNS.includes(s2);
   }
 
-  function generateConstrainedRandom(A, B, length = 6, avoidSeq = null) {
-    for (let attempt = 0; attempt < 200; attempt++) {
+  // Check equality to a target pattern under either mapping
+  function matchesPatternUnderAnyMapping(seq, door1, door2, targetLetters) {
+    const s1 = lettersFromSeq(seq, door1, door2).join('');
+    const s2 = lettersFromSeq(seq, door2, door1).join('');
+    return s1 === targetLetters || s2 === targetLetters;
+  }
+
+  function generateConstrainedRandom(door1, door2, length = 6, avoidSeq = null) {
+    for (let attempt = 0; attempt < 400; attempt++) {
       const seq = [];
       let last = null;
       let run = 0;
@@ -474,53 +476,52 @@
       for (let i = 0; i < length; i++) {
         let choice;
         if (run >= 3) {
-          choice = (last === A) ? B : A;
+          choice = (last === door1) ? door2 : door1;
         } else {
-          choice = (Math.random() < 0.5) ? A : B;
+          choice = (Math.random() < 0.5) ? door1 : door2;
         }
         run = (choice === last) ? run + 1 : 1;
         last = choice;
         seq.push(choice);
       }
 
-      const letters = lettersFromSeq(seq, A, B);
-      if (isBannedPattern(letters)) continue;
-      if (avoidSeq && letters.join('') === avoidSeq.letters) continue;
+      // 1) Reject any obvious structured pattern under any labeling
+      if (isStructuredLikeUnderAnyMapping(seq, door1, door2)) continue;
+
+      // 2) Reject if matches structured friend's pattern under any labeling
+      if (avoidSeq && avoidSeq.letters) {
+        if (matchesPatternUnderAnyMapping(seq, door1, door2, avoidSeq.letters)) continue;
+      }
 
       return seq;
     }
 
-    // fallback
+    // Extreme fallback (should basically never be hit)
     const fallback = [];
     for (let i = 0; i < length; i++) {
-      fallback.push(Math.random() < 0.5 ? A : B);
+      fallback.push(Math.random() < 0.5 ? door1 : door2);
     }
     return fallback;
   }
 
-  // ================== Initialize comparison config ==================
+  // -------- Initialize config --------
 
   function initComparison() {
-    // 1. Randomize friend observation order
     config.friendOrder = ['alice', 'lily'];
     shuffle(config.friendOrder);
 
-    // 2. Pick structured pattern
     config.structuredPattern =
       STRUCTURED_PATTERNS[Math.floor(Math.random() * STRUCTURED_PATTERNS.length)];
 
-    // 3. Randomly assign which friend is structured
     config.structuredFriend =
       Math.random() < 0.5 ? config.friendOrder[0] : config.friendOrder[1];
     config.randomFriend = (config.structuredFriend === 'alice') ? 'lily' : 'alice';
 
-    // 4. Structured friend A/B mapping
     const sFriend = friends[config.structuredFriend];
     const sDoors = [...sFriend.doors];
     shuffle(sDoors);
     config.patternDoors = { A: sDoors[0], B: sDoors[1] };
 
-    // 5. Structured sequence
     const structSeq = generateStructuredSequence(
       config.structuredPattern,
       config.patternDoors.A,
@@ -528,34 +529,50 @@
       6
     );
 
-    // 6. Random friend sequence (constrained)
     const rFriend = friends[config.randomFriend];
-    const rA = rFriend.doors[0];
-    const rB = rFriend.doors[1];
-    const avoidLetters = lettersFromSeq(structSeq, config.patternDoors.A, config.patternDoors.B).join('');
-    const randomSeq = generateConstrainedRandom(rA, rB, 6, { letters: avoidLetters });
+    const rDoor1 = rFriend.doors[0];
+    const rDoor2 = rFriend.doors[1];
 
-    // 7. Store sequences for both
+    const avoidLetters = lettersFromSeq(
+      structSeq,
+      config.patternDoors.A,
+      config.patternDoors.B
+    ).join('');
+
+    const randomSeq = generateConstrainedRandom(
+      rDoor1,
+      rDoor2,
+      6,
+      { letters: avoidLetters }
+    );
+
     config.sequences[config.structuredFriend] = structSeq;
     config.sequences[config.randomFriend] = randomSeq;
 
-    // --- Clear logging of assignment ---
     console.log('=== HIDE-AND-SEEK CONFIGURATION ===');
     console.log('Friend order (observation):', config.friendOrder);
-    console.log(`Alice pattern: ${
-      config.structuredFriend === 'alice' ? config.structuredPattern : 'random'
-    }`, 'sequence:', (config.sequences.alice || []).join('-'));
-    console.log(`Lily pattern: ${
-      config.structuredFriend === 'lily' ? config.structuredPattern : 'random'
-    }`, 'sequence:', (config.sequences.lily || []).join('-'));
+    console.log(
+      `Alice pattern: ${
+        config.structuredFriend === 'alice' ? config.structuredPattern : 'random'
+      } sequence:`,
+      (config.sequences.alice || []).join('-')
+    );
+    console.log(
+      `Lily pattern: ${
+        config.structuredFriend === 'lily' ? config.structuredPattern : 'random'
+      } sequence:`,
+      (config.sequences.lily || []).join('-')
+    );
     console.log('Structured friend:', config.structuredFriend);
     console.log('Random friend:', config.randomFriend);
-    console.log('Structured pattern:', config.structuredPattern,
-                'A =', config.patternDoors.A, 'B =', config.patternDoors.B);
+    console.log(
+      'Structured pattern:', config.structuredPattern,
+      'A =', config.patternDoors.A, 'B =', config.patternDoors.B
+    );
     console.log('===================================');
   }
 
-  // ================== Observation flow ==================
+  // -------- Observation flow --------
 
   function startFriendObservation(friendIndex) {
     currentObsFriendIndex = friendIndex;
@@ -574,7 +591,7 @@
     doorsImg.src = friend.doorsBanner;
     doorsImg.alt = `${friend.name} and their doors`;
     text.textContent =
-      `${friend.name} will hide 6 times behind one of these doors. Now let's see where ${friend.name} is hiding each time.`;
+      `${friend.name} will hide 6 times behind one of these doors. Let's see where ${friend.name} is hiding each time.`;
     grid.innerHTML = '';
 
     const oldBtn = document.getElementById('obs-next-button');
@@ -599,7 +616,7 @@
         if (currentObsFriendIndex === 0) {
           startFriendObservation(1);
         } else {
-          showChoiceScreen();
+          showEasyChoiceScreen();
         }
       }
     });
@@ -607,20 +624,18 @@
     showScreen('observation-screen');
   }
 
-  // ================== Choice & follow-up ==================
+  // -------- Choice 1 --------
 
-  function showChoiceScreen() {
-    // reset selection & followup UI
-    document.querySelectorAll('.friend-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('choice-followup').classList.add('hidden');
-    document.getElementById('why-text').value = '';
-    document.querySelectorAll('input[name="sure"]').forEach(r => r.checked = false);
-    document.querySelectorAll('input[name="coins"]').forEach(r => r.checked = false);
-    choiceData = { chosenFriend: null, why: '', sure: '', coinsExpect: '' };
+  function showEasyChoiceScreen() {
+    easyChoice = { friend: null, why: '', how: '' };
+    document.getElementById('easy-choice-followup').classList.add('hidden');
+    document.getElementById('easy-why-text').value = '';
+    document.getElementById('easy-how-text').value = '';
+    document.querySelectorAll('#easy-choice-screen .friend-card')
+      .forEach(c => c.classList.remove('selected'));
 
-    // render 6 observed outcomes for each friend
-    const aliceGrid = document.getElementById('alice-outcomes');
-    const lilyGrid = document.getElementById('lily-outcomes');
+    const aliceGrid = document.getElementById('easy-alice-outcomes');
+    const lilyGrid = document.getElementById('easy-lily-outcomes');
     aliceGrid.innerHTML = '';
     lilyGrid.innerHTML = '';
 
@@ -628,7 +643,6 @@
       const friend = friends[key];
       const seq = config.sequences[key] || [];
       const grid = key === 'alice' ? aliceGrid : lilyGrid;
-
       seq.forEach(door => {
         const img = document.createElement('img');
         img.src = friend.doorImgs[door];
@@ -637,73 +651,124 @@
       });
     });
 
-    const aliceCard = document.getElementById('choose-alice');
-    const lilyCard = document.getElementById('choose-lily');
+    const aliceCard = document.getElementById('easy-choose-alice');
+    const lilyCard = document.getElementById('easy-choose-lily');
 
     function selectFriend(key) {
-      choiceData.chosenFriend = key;
+      easyChoice.friend = key;
       aliceCard.classList.toggle('selected', key === 'alice');
       lilyCard.classList.toggle('selected', key === 'lily');
 
       const fName = friends[key].name;
-      const follow = document.getElementById('choice-followup');
-      const title = document.getElementById('followup-title');
-      title.textContent = `You chose ${fName}!`;
+      const follow = document.getElementById('easy-choice-followup');
+      const title = document.getElementById('easy-followup-title');
+      title.textContent = `You picked ${fName}.`;
       follow.classList.remove('hidden');
     }
 
     aliceCard.onclick = () => selectFriend('alice');
     lilyCard.onclick = () => selectFriend('lily');
 
-    document.getElementById('followup-submit-button').onclick = () => {
-      if (!choiceData.chosenFriend) {
+    document.getElementById('easy-followup-submit-button').onclick = () => {
+      if (!easyChoice.friend) {
         showCustomAlert('Please choose Alice or Lily first.');
         return;
       }
-
-      const why = document.getElementById('why-text').value.trim();
-      const sure = (document.querySelector('input[name="sure"]:checked') || {}).value || '';
-      const coins = (document.querySelector('input[name="coins"]:checked') || {}).value || '';
-
+      const why = document.getElementById('easy-why-text').value.trim();
+      const how = document.getElementById('easy-how-text').value.trim();
       if (!why) {
         showCustomAlert('Please tell us why you picked this friend.');
         return;
       }
-      if (!sure) {
-        showCustomAlert('Please tell us how sure you are.');
+      if (!how) {
+        showCustomAlert('Please tell us how you think this friend hides.');
         return;
       }
-      if (!coins) {
-        showCustomAlert('Please tell us how many coins you think you can win.');
+      easyChoice.why = why;
+      easyChoice.how = how;
+      showPlayChoiceScreen();
+    };
+
+    showScreen('easy-choice-screen');
+  }
+
+  // -------- Choice 2 --------
+
+  function showPlayChoiceScreen() {
+    playChoice = { friend: null, why: '' };
+    document.getElementById('play-choice-followup').classList.add('hidden');
+    document.getElementById('play-why-text').value = '';
+    document.querySelectorAll('#play-choice-screen .friend-card')
+      .forEach(c => c.classList.remove('selected'));
+
+    const aliceGrid = document.getElementById('play-alice-outcomes');
+    const lilyGrid = document.getElementById('play-lily-outcomes');
+    aliceGrid.innerHTML = '';
+    lilyGrid.innerHTML = '';
+
+    ['alice', 'lily'].forEach(key => {
+      const friend = friends[key];
+      const seq = config.sequences[key] || [];
+      const grid = key === 'alice' ? aliceGrid : lilyGrid;
+      seq.forEach(door => {
+        const img = document.createElement('img');
+        img.src = friend.doorImgs[door];
+        img.alt = `${friend.name} hiding at ${door}`;
+        grid.appendChild(img);
+      });
+    });
+
+    const aliceCard = document.getElementById('play-choose-alice');
+    const lilyCard = document.getElementById('play-choose-lily');
+
+    function selectFriend(key) {
+      playChoice.friend = key;
+      aliceCard.classList.toggle('selected', key === 'alice');
+      lilyCard.classList.toggle('selected', key === 'lily');
+
+      const fName = friends[key].name;
+      const follow = document.getElementById('play-choice-followup');
+      const title = document.getElementById('play-followup-title');
+      title.textContent = `You picked ${fName}.`;
+      follow.classList.remove('hidden');
+    }
+
+    aliceCard.onclick = () => selectFriend('alice');
+    lilyCard.onclick = () => selectFriend('lily');
+
+    document.getElementById('play-followup-submit-button').onclick = () => {
+      if (!playChoice.friend) {
+        showCustomAlert('Please choose Alice or Lily first.');
         return;
       }
-
-      choiceData.why = why;
-      choiceData.sure = sure;
-      choiceData.coinsExpect = coins;
-
+      const why = document.getElementById('play-why-text').value.trim();
+      if (!why) {
+        showCustomAlert('Please tell us why you picked this friend.');
+        return;
+      }
+      playChoice.why = why;
       showScreen('final-screen');
     };
 
-    showScreen('choice-screen');
+    showScreen('play-choice-screen');
   }
 
-  // ================== Data export ==================
+  // -------- Data export --------
 
   function downloadCSV() {
     const header = [
-      'Test Date','Experimenter','ParticipantID','Age','Sex',
+      'Experimenter','ParticipantID','Age','Sex',
       'FriendOrder1','FriendOrder2',
       'StructuredFriend','RandomFriend','StructuredPattern',
       'AliceSeq','LilySeq',
-      'ChosenFriend','Why','Sure(1-5)','CoinsExpectation'
+      'EasyFriend','EasyWhy','EasyHow',
+      'PlayFriend','PlayWhy'
     ];
 
     const aliceSeq = (config.sequences.alice || []).join('-');
     const lilySeq = (config.sequences.lily || []).join('-');
 
     const row = [
-      participantInfo.test_date || '',
       participantInfo.experimenter || '',
       participantInfo.SID || '',
       participantInfo.age || '',
@@ -715,10 +780,11 @@
       config.structuredPattern || '',
       aliceSeq,
       lilySeq,
-      choiceData.chosenFriend || '',
-      '"' + (choiceData.why || '').replace(/"/g, '""') + '"',
-      choiceData.sure || '',
-      choiceData.coinsExpect || ''
+      easyChoice.friend || '',
+      '"' + (easyChoice.why || '').replace(/"/g, '""') + '"',
+      '"' + (easyChoice.how || '').replace(/"/g, '""') + '"',
+      playChoice.friend || '',
+      '"' + (playChoice.why || '').replace(/"/g, '""') + '"'
     ];
 
     const csv = header.join(',') + '\n' + row.join(',');
@@ -733,33 +799,29 @@
     URL.revokeObjectURL(url);
   }
 
-  // ================== Top-level wiring ==================
+  // -------- Wiring --------
 
-  // 1) Participant info FIRST
   document.getElementById('info-form').addEventListener('submit', (e) => {
     e.preventDefault();
     participantInfo = Object.fromEntries(new FormData(e.target));
     console.log('Participant Info:', participantInfo);
-    initComparison();                 // set up patterns
+    initComparison();
     showScreen('start-screen');
   });
 
-  // 2) Start screen buttons
   document.getElementById('start-ready-button').addEventListener('click', () => {
-    startFriendObservation(0);        // first friend in randomized order
+    startFriendObservation(0);
   });
 
   document.getElementById('start-decline-button').addEventListener('click', () => {
     showCustomAlert('Okay, you don’t have to play.', () => {});
   });
 
-  // 3) Final download button
   document.getElementById('final-download-button').addEventListener('click', () => {
     downloadCSV();
     showCustomAlert('Data downloaded. You are all done!');
   });
 
-  // Show participant info screen on load
   showScreen('participant-info-screen');
 </script>
 </body>
