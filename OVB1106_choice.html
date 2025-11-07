@@ -74,17 +74,29 @@
 
     .friend-header {
       display: flex;
+      flex-direction: column;   /* stack title over image */
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 12px;
       margin-top: 10px;
+      text-align: center;
     }
 
+    .friend-header h2 {
+      margin: 0;
+    }
+
+    .friend-doors {
+      width: 600px;            
+      height: auto;
+      object-fit: contain;
+    }
+/* 
     .friend-header img {
       width: 90px;
       height: 90px;
       object-fit: contain;
-    }
+    } */
 
     .friend-choose-container {
       display: flex;
@@ -209,9 +221,9 @@
   <div id="participant-info-screen">
     <h2 class="center">Who do you want to play hide-and-seek with?</h2>
     <form id="info-form">
-      <label>Test Date
-        <input type="text" name="test_date" placeholder="mm/dd/yyyy" required>
-      </label>
+      <!-- <label>Test Date
+        <input type="text" name="test_date" placeholder="mm/dd/yyyy" required> -->
+      <!-- </label> -->
       <label>Experimenter initials
         <input type="text" name="experimenter" required>
       </label>
@@ -232,7 +244,7 @@
   <div id="start-screen" class="hidden center">
     <h2>Ready to play a hiding-and-seek coin game?</h2>
     <p>
-      In this game, I will introduce you to two friends, <strong>Alice</strong> and <strong>Lily</strong>, who love to hide.
+      In this game, I will introduce you to two friends, <strong>Alice</strong> and <strong>Lily</strong>, who love to hide behind two different doors.
       They will give you a coin every time you guess where they are hiding correctly.
     </p>
     <p>Your job is to figure out who is easier to predict so you can try to win the most coins!</p>
@@ -262,8 +274,8 @@
   <!-- 4. Observation screen -->
   <div id="observation-screen" class="hidden">
     <div class="friend-header">
-      <img id="obs-friend-avatar" alt="Friend">
       <h2 id="obs-title"></h2>
+      <img id="obs-friend-doors" alt="" class="friend-doors">
     </div>
     <p id="obs-text" class="center"></p>
     <div id="observation-outcomes-display" class="observation-outcome-grid"></div>
@@ -276,8 +288,9 @@
   <div id="choice-screen" class="hidden">
     <h2 class="center">Which friend do you want to play with?</h2>
     <p class="center">
+      Alice or Lily will give you a coin every time you guess where they are hiding correctly.
+      Whose hiding do you think you can guess?
       Choose the friend you think will help you win the <strong>most coins</strong>.
-      Remember: they give you a coin every time you guess where they are hiding correctly.
     </p>
     <div class="friend-choose-container">
       <div id="choose-alice" class="friend-card">
@@ -308,7 +321,7 @@
         <label><input type="radio" name="sure" value="2"> 2 (a little sure)</label>
         <label><input type="radio" name="sure" value="3"> 3 (kind of sure)</label>
         <label><input type="radio" name="sure" value="4"> 4 (very sure)</label>
-        <label><input type="radio" name="sure" value="5"> 5 (super sure, as sure as you can be)</label>
+        <label><input type="radio" name="sure" value="5"> 5 (super sure)</label>
       </div>
       <div class="scale-group">
         <strong>How many coins do you think you can win with this friend?</strong><br>
@@ -378,6 +391,7 @@
     alice: {
       name: 'Alice',
       avatar: 'https://github.com/ey242/OVB/raw/main/public/stim/alice.png',
+      doorsBanner: 'https://github.com/ey242/OVB/raw/main/public/stim/alicedoors.png',
       doors: ['pink', 'green'],
       doorImgs: {
         pink: 'https://github.com/ey242/OVB/raw/main/public/stim/alicepink.png',
@@ -387,6 +401,7 @@
     lily: {
       name: 'Lily',
       avatar: 'https://github.com/ey242/OVB/raw/main/public/stim/lily.png',
+      doorsBanner: 'https://github.com/ey242/OVB/raw/main/public/stim/lilydoors.png',
       doors: ['purple', 'blue'],
       doorImgs: {
         purple: 'https://github.com/ey242/OVB/raw/main/public/stim/lilypurple.png',
@@ -550,16 +565,16 @@
     const friend = friends[key];
     const seq = config.sequences[key];
 
-    const avatar = document.getElementById('obs-friend-avatar');
+    const doorsImg = document.getElementById('obs-friend-doors');
     const title = document.getElementById('obs-title');
     const text = document.getElementById('obs-text');
     const grid = document.getElementById('observation-outcomes-display');
 
-    avatar.src = friend.avatar;
-    avatar.alt = friend.name;
     title.textContent = `Watch how ${friend.name} hides.`;
+    doorsImg.src = friend.doorsBanner;
+    doorsImg.alt = `${friend.name} and their doors`;
     text.textContent =
-      `${friend.name} will hide 6 times. Click the button to see where ${friend.name} is hiding each time.`;
+      `${friend.name} will hide 6 times behind one of these doors. Now let's see where ${friend.name} is hiding each time.`;
     grid.innerHTML = '';
 
     const oldBtn = document.getElementById('obs-next-button');
@@ -711,7 +726,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hide_and_seek_${participantInfo.SID || 'data'}.csv`;
+    a.download = `participant_${participantInfo.SID || 'data'}_hideseek.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
