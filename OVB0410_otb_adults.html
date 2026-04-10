@@ -539,14 +539,16 @@
       <div id="final-summary-screen" class="final-summary hidden">
         <h2>Thank you for participating!</h2>
         <p id="final-coins-earned"></p>
-        <p>Your Prolific completion code is <strong>C52RX9MG</strong>.</p>
-        <p>
-          Completion link:
-          <a href="https://app.prolific.com/submissions/complete?cc=C52RX9MG">
-            https://app.prolific.com/submissions/complete?cc=C52RX9MG
-          </a>
-        </p>
-        <button id="final-continue-button" class="continue-button">Submit Experiment and Return to Prolific</button>
+        <p id="final-save-status">Saving your data now. Please do not close this page yet.</p>
+        <div id="final-completion-info" class="hidden">
+          <p>Your Prolific completion code is <strong>C52RX9MG</strong>.</p>
+          <p>
+            Completion link:
+            <a href="https://app.prolific.com/submissions/complete?cc=C52RX9MG">
+              https://app.prolific.com/submissions/complete?cc=C52RX9MG
+            </a>
+          </p>
+        </div>
       </div>
     </div>
 
@@ -982,11 +984,17 @@
        */
       function handleQuit() {
         showCustomConfirm('Are you sure you want to quit? Your progress will be saved but you will not be compensated.', () => {
-          saveDataToCSV(); // Save all collected data
-          showCustomAlert('Thank you for participating. Your data has been saved.', () => {
-            window.location.reload(); // Reload the page
+          saveDataToServer()
+            .then(() => {
+              showCustomAlert('Thank you for participating. Your data has been saved.', () => {
+                window.location.reload(); // Reload the page
+              });
+            })
+            .catch(error => {
+              console.error('Error saving data:', error);
+              showCustomAlert('There was an error saving your data. Please contact the researcher before closing this page.');
+            });
           });
-        });
       }
 
       // --- Session Management ---
@@ -1704,21 +1712,27 @@
       function showFinalSummary() {
         const totalCoins = sessionData.sessionA.coinsEarned + sessionData.sessionB.coinsEarned;
         document.getElementById('final-coins-earned').textContent = `You won: ${totalCoins} out of ${BETTING_ROUNDS * 2}`;
-        const finalButton = document.getElementById('final-continue-button');
-        finalButton.replaceWith(finalButton.cloneNode(true));
-        document.getElementById('final-continue-button').addEventListener('click', finishExperiment);
+        const saveStatus = document.getElementById('final-save-status');
+        const completionInfo = document.getElementById('final-completion-info');
+        saveStatus.textContent = 'Saving your data now. Please do not close this page yet.';
+        completionInfo.classList.add('hidden');
         showScreen('final-summary-screen');
-      }
 
-      function finishExperiment() {
-        saveDataToCSV();
-        window.location.href = 'https://app.prolific.com/submissions/complete?cc=C52RX9MG';
+        saveDataToServer()
+          .then(() => {
+            saveStatus.textContent = 'Your data is saved. Thank you for participating.';
+            completionInfo.classList.remove('hidden');
+          })
+          .catch(error => {
+            console.error('Error saving data:', error);
+            saveStatus.textContent = 'There was an error saving your data. Please contact the researcher before closing this page.';
+          });
       }
 
       /**
-       * Saves all collected data to a CSV file.
+       * Sends all collected data to the study server.
        */
-      function saveDataToCSV() {
+      function saveDataToServer() {
         const header = [
           'Prolific ID', 'Participant Age', 'Participant Sex',
           'Session Type', 'Session Pattern', 'Session Character', 'Trial Type', 'Trial Index', 'Player Choice', 'Actual Outcome', 'Coins Earned This Trial', 
@@ -1831,23 +1845,24 @@
         addSessionRows(`Session 1`, sessionData[sessionOrder[0]]);
         addSessionRows(`Session 2`, sessionData[sessionOrder[1]]);
 
-        const csvContent = [header, ...dataRows].map(row => row.join(',')).join('\n');
+        const payload = {
+          participantID: participantInfo.SID || '',
+          data: [header, ...dataRows]
+        };
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        if (link.download !== undefined) {
-          const url = URL.createObjectURL(blob);
-          link.setAttribute("href", url);
-          link.setAttribute("download", `participant_${participantInfo.SID || 'unknown'}_observethenbet.csv`);
-          link.style.visibility = 'hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          showCustomAlert('Data saved successfully!');
-        } else {
-          showCustomAlert('Your browser does not support downloading files automatically. Please copy the data from the console or manually save the page.');
-          console.log(csvContent);
-        }
+        return fetch('https://us-central1-goog24-02.cloudfunctions.net/saveToNewSheet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(response => {
+            if (!response.ok) {
+              return response.text().then(text => {
+                throw new Error(text || `Server returned ${response.status}`);
+              });
+            }
+            return response.json();
+          });
       }
 
       // --- Event Listeners and Initial Setup ---
