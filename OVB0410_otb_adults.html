@@ -785,6 +785,7 @@
       const MAX_OBSERVATIONS = 104; // Upper limit for observations for both practice and main sessions
       const BETTING_ROUNDS = 10;
       const PRACTICE_ROUNDS = 4; // Number of rounds for practice betting
+      const ADULT_PATTERN_ASSIGNMENT_ENDPOINT = 'https://us-central1-goog24-02.cloudfunctions.net/assignOtbAdultPatterns';
 
       let participantInfo = {};
       let sessionData = {
@@ -999,30 +1000,67 @@
 
       // --- Session Management ---
 
-      function choosePatternFromBucket(bucket) {
-        if (bucket === 'AAB_ABB') {
-          return Math.random() < 0.5 ? 'AAB' : 'ABB';
+      function chooseAdultSessionPatternsLocally() {
+        // Targeted adult expansion schedule based on the current 86-adult sample.
+        // This fills the underrepresented pattern slots for the next 34 adults:
+        // ABB +30, AAB +24, alternating +13, random +1, AABB +0.
+        // This is only a fallback if the central assignment tracker is unavailable.
+        const targetedPairs = [
+          ...Array(20).fill(['ABB', 'AAB']),
+          ...Array(9).fill(['ABB', 'alternating']),
+          ...Array(4).fill(['AAB', 'alternating']),
+          ['ABB', 'random']
+        ];
+
+        const participantKey = String(participantInfo.SID || '').trim();
+        const seedSource = participantKey || `${Date.now()}-${Math.random()}`;
+        let hash = 0;
+        for (let i = 0; i < seedSource.length; i++) {
+          hash = ((hash << 5) - hash + seedSource.charCodeAt(i)) | 0;
         }
-        return bucket;
+        const pair = targetedPairs[Math.abs(hash) % targetedPairs.length].slice();
+        shuffleArray(pair);
+        return pair;
       }
 
-      function chooseAdultSessionPatterns() {
-        // Four equally weighted assignment buckets:
-        // alternating, random, AABB, and the grouped AAB/ABB bucket.
-        const patternBuckets = ['alternating', 'random', 'AAB_ABB', 'AABB'];
-        shuffleArray(patternBuckets);
-        return patternBuckets.slice(0, 2).map(choosePatternFromBucket);
+      async function chooseAdultSessionPatterns() {
+        const participantKey = String(participantInfo.SID || '').trim();
+        if (!participantKey) {
+          return chooseAdultSessionPatternsLocally();
+        }
+
+        try {
+          const response = await fetch(ADULT_PATTERN_ASSIGNMENT_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ participantID: participantKey })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Assignment server returned ${response.status}`);
+          }
+
+          const assignment = await response.json();
+          if (!Array.isArray(assignment.patterns) || assignment.patterns.length !== 2) {
+            throw new Error('Assignment server returned an invalid pattern pair');
+          }
+          console.log('Central pattern assignment:', assignment);
+          return assignment.patterns;
+        } catch (error) {
+          console.error('Central assignment failed; using local targeted fallback:', error);
+          return chooseAdultSessionPatternsLocally();
+        }
       }
 
       /**
        * Initializes the experiment by setting up session order and starting the first instruction.
        */
-      function initializeExperiment() {
+      async function initializeExperiment() {
         sessionOrder = ['sessionA', 'sessionB'];
         shuffleArray(sessionOrder); // Randomize which is "Session 1" vs "Session 2"
 
-        // 1) Assign two pattern buckets with equal probability across all bucket types.
-        const candidatePatterns = chooseAdultSessionPatterns();
+        // 1) Assign two targeted pattern types for this adult expansion wave.
+        const candidatePatterns = await chooseAdultSessionPatterns();
 
         sessionData.sessionA.pattern = candidatePatterns[0];
         sessionData.sessionB.pattern = candidatePatterns[1];
@@ -1866,12 +1904,12 @@
       }
 
       // --- Event Listeners and Initial Setup ---
-      document.getElementById('info-form').addEventListener('submit', (e) => {
+      document.getElementById('info-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         participantInfo = Object.fromEntries(formData);
         console.log('Participant Info:', participantInfo);
-        initializeExperiment(); // Start the experiment flow
+        await initializeExperiment(); // Start the experiment flow
       });
 
       document.getElementById('consent-button').addEventListener('click', () => {
