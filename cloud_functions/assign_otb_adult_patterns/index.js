@@ -47,8 +47,9 @@ function emptyTracker() {
     createdAtIso: iso(),
     staleReservationMinutes: STALE_RESERVATION_MS / 60000,
     targetSlots: {
-      adults: TARGETED_PAIRS.length,
-      sessionPatternAdditions: {
+      adultsPerBalancedCycle: TARGETED_PAIRS.length,
+      repeatsAfterFirstCycle: true,
+      sessionPatternAdditionsPerCycle: {
         ABB: 30,
         AAB: 24,
         alternating: 13,
@@ -66,6 +67,17 @@ function normalizeTracker(tracker) {
   tracker.slots ||= {};
   tracker.assignments ||= {};
   tracker.staleReservationMinutes = STALE_RESERVATION_MS / 60000;
+  tracker.targetSlots = {
+    adultsPerBalancedCycle: TARGETED_PAIRS.length,
+    repeatsAfterFirstCycle: true,
+    sessionPatternAdditionsPerCycle: {
+      ABB: 30,
+      AAB: 24,
+      alternating: 13,
+      random: 1,
+      AABB: 0
+    }
+  };
 
   // Backfill the first tracker version, which stored only assignments.
   for (const [participantID, assignment] of Object.entries(tracker.assignments)) {
@@ -159,13 +171,19 @@ function expireStaleReservations(tracker, nowMs) {
 }
 
 function findAvailableSlot(tracker) {
-  for (let slotIndex = 0; slotIndex < TARGETED_PAIRS.length; slotIndex++) {
+  const usedSlotIndexes = Object.keys(tracker.slots || {})
+    .map(Number)
+    .filter(Number.isInteger)
+    .sort((a, b) => a - b);
+
+  for (const slotIndex of usedSlotIndexes) {
     const slot = tracker.slots[String(slotIndex)];
     if (!slot || !slot.currentParticipantID || slot.status === 'stale') {
       return slotIndex;
     }
   }
-  return -1;
+
+  return usedSlotIndexes.length ? Math.max(...usedSlotIndexes) + 1 : 0;
 }
 
 function publicAssignment(participantID, assignment, reused) {
@@ -173,6 +191,7 @@ function publicAssignment(participantID, assignment, reused) {
     participantID,
     wave: assignment.wave,
     slotIndex: assignment.slotIndex,
+    cycleIndex: Math.floor(assignment.slotIndex / TARGETED_PAIRS.length),
     scheduleIndex: assignment.scheduleIndex,
     patterns: assignment.patterns,
     status: assignment.status,
