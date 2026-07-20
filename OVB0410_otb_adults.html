@@ -788,6 +788,9 @@
       const ADULT_PATTERN_ASSIGNMENT_ENDPOINT = 'https://us-central1-goog24-02.cloudfunctions.net/assignOtbAdultPatterns';
 
       let participantInfo = {};
+      let adultPatternAssignment = null;
+      let adultAssignmentHeartbeatTimer = null;
+      let adultAssignmentCompleted = false;
       let sessionData = {
         sessionA: {
           pattern: '', // 'alternating' or 'random'
@@ -985,7 +988,7 @@
        */
       function handleQuit() {
         showCustomConfirm('Are you sure you want to quit? Your progress will be saved but you will not be compensated.', () => {
-          saveDataToServer()
+          saveDataToServer(false)
             .then(() => {
               showCustomAlert('Thank you for participating. Your data has been saved.', () => {
                 window.location.reload(); // Reload the page
@@ -1033,7 +1036,7 @@
           const response = await fetch(ADULT_PATTERN_ASSIGNMENT_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ participantID: participantKey })
+            body: JSON.stringify({ participantID: participantKey, action: 'assign' })
           });
 
           if (!response.ok) {
@@ -1045,11 +1048,82 @@
             throw new Error('Assignment server returned an invalid pattern pair');
           }
           console.log('Central pattern assignment:', assignment);
+          adultPatternAssignment = assignment;
+          startAdultAssignmentHeartbeat();
           return assignment.patterns;
         } catch (error) {
           console.error('Central assignment failed; using local targeted fallback:', error);
+          adultPatternAssignment = null;
           return chooseAdultSessionPatternsLocally();
         }
+      }
+
+      function postAdultAssignmentAction(action, useBeacon = false) {
+        const participantKey = String(participantInfo.SID || '').trim();
+        if (!participantKey || !adultPatternAssignment) {
+          return Promise.resolve(null);
+        }
+
+        const payload = {
+          participantID: participantKey,
+          action,
+          slotIndex: adultPatternAssignment.slotIndex,
+          scheduleIndex: adultPatternAssignment.scheduleIndex
+        };
+
+        if (useBeacon && navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+          navigator.sendBeacon(ADULT_PATTERN_ASSIGNMENT_ENDPOINT, blob);
+          return Promise.resolve(null);
+        }
+
+        return fetch(ADULT_PATTERN_ASSIGNMENT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(response => {
+            if (!response.ok) {
+              return response.text().then(text => {
+                throw new Error(text || `Assignment tracker returned ${response.status}`);
+              });
+            }
+            return response.json();
+          })
+          .then(update => {
+            if (update) {
+              adultPatternAssignment = { ...adultPatternAssignment, ...update };
+            }
+            return update;
+          });
+      }
+
+      function startAdultAssignmentHeartbeat() {
+        stopAdultAssignmentHeartbeat();
+        postAdultAssignmentAction('heartbeat').catch(error => {
+          console.warn('Assignment heartbeat failed:', error);
+        });
+        adultAssignmentHeartbeatTimer = window.setInterval(() => {
+          postAdultAssignmentAction('heartbeat').catch(error => {
+            console.warn('Assignment heartbeat failed:', error);
+          });
+        }, 2 * 60 * 1000);
+      }
+
+      function stopAdultAssignmentHeartbeat() {
+        if (adultAssignmentHeartbeatTimer) {
+          window.clearInterval(adultAssignmentHeartbeatTimer);
+          adultAssignmentHeartbeatTimer = null;
+        }
+      }
+
+      function markAdultAssignmentComplete() {
+        adultAssignmentCompleted = true;
+        stopAdultAssignmentHeartbeat();
+        return postAdultAssignmentAction('complete').catch(error => {
+          console.warn('Could not mark pattern assignment complete:', error);
+          return null;
+        });
       }
 
       /**
@@ -1756,7 +1830,7 @@
         completionInfo.classList.add('hidden');
         showScreen('final-summary-screen');
 
-        saveDataToServer()
+        saveDataToServer(true)
           .then(() => {
             saveStatus.textContent = 'Your data is saved. Thank you for participating.';
             completionInfo.classList.remove('hidden');
@@ -1770,7 +1844,7 @@
       /**
        * Sends all collected data to the study server.
        */
-      function saveDataToServer() {
+      function saveDataToServer(markAssignmentComplete = false) {
         const header = [
           'Prolific ID', 'Participant Age', 'Participant Sex',
           'Session Type', 'Session Pattern', 'Session Character', 'Trial Type', 'Trial Index', 'Player Choice', 'Actual Outcome', 'Coins Earned This Trial', 
@@ -1900,6 +1974,12 @@
               });
             }
             return response.json();
+          })
+          .then(result => {
+            if (!markAssignmentComplete) {
+              return result;
+            }
+            return markAdultAssignmentComplete().then(() => result);
           });
       }
 
@@ -1921,6 +2001,13 @@
         showCustomAlert('You have declined to participate. The experiment will now close.', () => {
           window.close(); 
         });
+      });
+
+      window.addEventListener('pagehide', () => {
+        if (adultPatternAssignment && !adultAssignmentCompleted) {
+          stopAdultAssignmentHeartbeat();
+          postAdultAssignmentAction('close', true);
+        }
       });
 
       // Instruction screen navigation (initial videos, now removed)
